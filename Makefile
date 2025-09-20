@@ -1,5 +1,5 @@
 run:
-	uv run jupyter notebook
+	uv run python main.py
 
 sync:
 	uv sync
