@@ -21,9 +21,23 @@ from typing_extensions import Annotated, Literal
 from .prompts import SUMMARIZE_WEB_SEARCH
 from .state import DeepAgentState
 
-# Summarization model 
-summarization_model = init_chat_model(model="openai:gpt-4o-mini")
-tavily_client = TavilyClient()
+# Initialize clients lazily to avoid import-time API key requirements
+summarization_model = None
+tavily_client = None
+
+def get_summarization_model():
+    """Get or initialize the summarization model."""
+    global summarization_model
+    if summarization_model is None:
+        summarization_model = init_chat_model(model="anthropic:claude-3-5-sonnet-20241022")
+    return summarization_model
+
+def get_tavily_client():
+    """Get or initialize the Tavily client."""
+    global tavily_client
+    if tavily_client is None:
+        tavily_client = TavilyClient()
+    return tavily_client
 
 class Summary(BaseModel):
     """Schema for webpage content summarization."""
@@ -51,7 +65,8 @@ def run_tavily_search(
     Returns:
         Search results dictionary
     """
-    result = tavily_client.search(
+    client = get_tavily_client()
+    result = client.search(
         search_query,
         max_results=max_results,
         include_raw_content=include_raw_content,
@@ -71,7 +86,8 @@ def summarize_webpage_content(webpage_content: str) -> Summary:
     """
     try:
         # Set up structured output model for summarization
-        structured_model = summarization_model.with_structured_output(Summary)
+        model = get_summarization_model()
+        structured_model = model.with_structured_output(Summary)
 
         # Generate summary
         summary_and_filename = structured_model.invoke([

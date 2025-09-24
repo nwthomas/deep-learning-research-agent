@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from IPython.display import Image, display
@@ -17,8 +18,29 @@ from .state import DeepAgentState
 from .task_tool import _create_task_tool
 from .todo_tools import write_todos
 
-# Create agent using create_react_agent directly
-model = init_chat_model(model="anthropic:claude-sonnet-4-20250514", temperature=0.0)
+def get_model(use_local=False):
+    """Initialize the chat model based on configuration."""
+    if use_local:
+        # Use local Ollama model
+        ollama_base_url = os.getenv("OLLAMA_BASE_URL", "")
+        ollama_model = os.getenv("MODEL_NAME", "")
+        
+        # Create model configuration for Ollama using OpenAI-compatible API
+        model = init_chat_model(
+            model=ollama_model if not None else "openai/chat",
+            model_provider="ollama",
+            base_url=ollama_base_url,
+            api_key="ollama",  # Required but ignored by Ollama
+            temperature=0.0
+        )
+    else:
+        # Use Anthropic Claude
+        model = init_chat_model(model="anthropic:claude-sonnet-4-20250514", temperature=0.0)
+    
+    return model
+
+# Default model (will be overridden in run_agent if needed)
+model = get_model()
 
 # Limits
 max_concurrent_research_units = 3
@@ -51,8 +73,25 @@ SUBAGENT_INSTRUCTIONS = SUBAGENT_USAGE_INSTRUCTIONS.format(
     date=datetime.now().strftime("%a %b %-d, %Y"),
 )
 
-def run_agent(user_input):
-    """Run the agent with the given user input."""
+def run_agent(user_input, use_local=False):
+    """Run the agent with the given user input.
+    
+    Args:
+        user_input (str): The user's input/query
+        use_local (bool): If True, use local Ollama model; if False, use Anthropic Claude
+    """
+    # Get the appropriate model based on the use_local flag
+    current_model = get_model(use_local=use_local)
+    
+    # Create task tool with the current model
+    current_task_tool = _create_task_tool(
+        sub_agent_tools, [research_sub_agent], current_model, DeepAgentState
+    )
+    
+    # Update tools list with the current task tool
+    current_delegation_tools = [current_task_tool]
+    current_all_tools = sub_agent_tools + built_in_tools + current_delegation_tools
+    
     INSTRUCTIONS = (
         "# TODO MANAGEMENT\n"
         + TODO_USAGE_INSTRUCTIONS
@@ -69,7 +108,7 @@ def run_agent(user_input):
     )
 
     agent = create_react_agent(
-        model, all_tools, prompt=INSTRUCTIONS, state_schema=DeepAgentState
+        current_model, current_all_tools, prompt=INSTRUCTIONS, state_schema=DeepAgentState
     )
 
     result = agent.invoke(
@@ -77,7 +116,7 @@ def run_agent(user_input):
             "messages": [
                 {
                     "role": "user",
-                    "content": "Give me an overview of Model Context Protocol (MCP).",
+                    "content": user_input,
                 }
             ],
         }
