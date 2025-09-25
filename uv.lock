@@ -251,17 +251,17 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ipykernel", specifier = ">=6.30.1" },
-    { name = "langchain", specifier = ">=0.3.27" },
-    { name = "langchain-anthropic", specifier = ">=0.3.20" },
-    { name = "langchain-ollama", specifier = ">=0.3.8" },
-    { name = "langchain-openai", specifier = ">=0.2.0" },
-    { name = "langgraph", specifier = ">=0.6.7" },
-    { name = "markdownify", specifier = ">=1.2.0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "rich", specifier = ">=14.1.0" },
-    { name = "tavily-python", specifier = ">=0.7.12" },
-    { name = "typing-extensions", specifier = ">=4.15.0" },
+    { name = "ipykernel", specifier = "==6.30.1" },
+    { name = "langchain", specifier = "==0.3.27" },
+    { name = "langchain-anthropic", specifier = "==0.3.20" },
+    { name = "langchain-ollama", specifier = "==0.3.8" },
+    { name = "langchain-openai", specifier = "==0.3.33" },
+    { name = "langgraph", specifier = "==0.6.7" },
+    { name = "markdownify", specifier = "==1.2.0" },
+    { name = "python-dotenv", specifier = "==1.1.1" },
+    { name = "rich", specifier = "==14.1.0" },
+    { name = "tavily-python", specifier = "==0.7.12" },
+    { name = "typing-extensions", specifier = "==4.15.0" },
 ]
 
 [[package]]
