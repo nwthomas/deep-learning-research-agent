@@ -1,0 +1,157 @@
+# Default values for deep-learning-research-agent
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: deep-learning-research-agent
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: research-agent.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: research-agent-tls
+  #    hosts:
+  #      - research-agent.local
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Environment configuration
+env:
+  # Model provider: "anthropic" or "local"
+  MODEL_PROVIDER: "anthropic"
+  
+  # Ollama configuration (when using local models)
+  OLLAMA_BASE_URL: "http://ollama-service:11434"
+  OLLAMA_MODEL: "deepseek-r1:32b"
+  
+  # LangSmith configuration (optional)
+  LANGSMITH_TRACING: "false"
+  LANGSMITH_PROJECT: "deep-learning-research-agent"
+
+# Secret configuration for API keys
+secrets:
+  # Set to true to create secrets from values
+  create: true
+  # API keys (should be set via --set or external secret management)
+  anthropicApiKey: ""
+  tavilyApiKey: ""
+  langsmithApiKey: ""
+
+# ConfigMap for non-sensitive configuration
+configMap:
+  create: true
+
+# Job configuration for one-time runs
+job:
+  enabled: false
+  # Command to run in the job
+  command: ["python", "main.py", "--query", "Your research question here"]
+  # Restart policy
+  restartPolicy: Never
+  # Backoff limit
+  backoffLimit: 3
+
+# CronJob configuration for scheduled runs
+cronJob:
+  enabled: false
+  # Cron schedule (e.g., "0 9 * * *" for daily at 9 AM)
+  schedule: "0 9 * * *"
+  # Command to run in the cron job
+  command: ["python", "main.py", "--query", "Daily research update"]
+  # Concurrency policy
+  concurrencyPolicy: Forbid
+  # Successful jobs history limit
+  successfulJobsHistoryLimit: 3
+  # Failed jobs history limit
+  failedJobsHistoryLimit: 1
+
+# Persistent volume configuration
+persistence:
+  enabled: false
+  # storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  # mountPath: /app/data
+
+# Network policies
+networkPolicy:
+  enabled: false
+  # Allow ingress from specific namespaces
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 8000
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1

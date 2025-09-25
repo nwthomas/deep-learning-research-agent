@@ -41,3 +41,26 @@ docker-dev:
 docker-clean:
 	docker system prune -f
 	docker image prune -f
+
+# Helm commands
+helm-lint:
+	helm lint helm/deep-learning-research-agent
+
+helm-template:
+	helm template deep-learning-research-agent helm/deep-learning-research-agent
+
+helm-dry-run:
+	helm install deep-learning-research-agent helm/deep-learning-research-agent --dry-run --debug
+
+helm-install:
+	helm install deep-learning-research-agent helm/deep-learning-research-agent
+
+helm-upgrade:
+	helm upgrade deep-learning-research-agent helm/deep-learning-research-agent
+
+helm-uninstall:
+	helm uninstall deep-learning-research-agent
+
+# Package Helm chart
+helm-package:
+	helm package helm/deep-learning-research-agent

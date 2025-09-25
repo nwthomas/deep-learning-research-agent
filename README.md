@@ -101,6 +101,78 @@ make docker-run-interactive
 docker-compose run --rm research-agent bash
 ```
 
+## Kubernetes Deployment with Helm
+
+### Prerequisites
+- Kubernetes cluster
+- Helm 3.x installed
+- Docker image built and pushed to a registry
+
+### Deploy with Helm
+
+1. **Build and push Docker image:**
+   ```bash
+   make docker-build
+   docker tag deep-learning-research-agent your-registry/deep-learning-research-agent:latest
+   docker push your-registry/deep-learning-research-agent:latest
+   ```
+
+2. **Install with Helm:**
+   ```bash
+   # Basic installation
+   make helm-install
+   
+   # Or with custom values
+   helm install deep-learning-research-agent helm/deep-learning-research-agent \
+     --set image.repository=your-registry/deep-learning-research-agent \
+     --set secrets.anthropicApiKey=your-api-key \
+     --set secrets.tavilyApiKey=your-api-key
+   ```
+
+3. **Deploy with custom values:**
+   ```bash
+   # Override specific values
+   helm install deep-learning-research-agent helm/deep-learning-research-agent \
+     --set image.repository=your-registry/deep-learning-research-agent \
+     --set secrets.anthropicApiKey=your-api-key \
+     --set secrets.tavilyApiKey=your-api-key \
+     --set ingress.enabled=true \
+     --set ingress.hosts[0].host=research-agent.your-domain.com
+   ```
+
+### ArgoCD Deployment
+
+1. **Apply the ArgoCD application:**
+   ```bash
+   kubectl apply -f argocd-application.yaml
+   ```
+
+2. **Monitor deployment:**
+   ```bash
+   kubectl get applications -n argocd
+   ```
+
+### Available Helm Commands
+
+```bash
+# Lint the chart
+make helm-lint
+
+# Template the chart
+make helm-template
+
+# Dry run installation
+make helm-dry-run
+
+# Install/upgrade/uninstall
+make helm-install
+make helm-upgrade
+make helm-uninstall
+
+# Package the chart
+make helm-package
+```
+
 ## API Keys Required
 
 - **Anthropic API Key**: Get one from [Anthropic Console](https://console.anthropic.com/) for content summarization
