@@ -7,3 +7,7 @@ A multipurpose deep learning research agent 🔗
 ## 🧱 Project Managements
 
 Work for this repository is housed in this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
+
+## 🙇🏻‍♂️ Acknowledgements
+
+- The [LangChain](https://www.langchain.com) team for their exceptional documentation and [LangChain Academy courses](https://academy.langchain.com).
