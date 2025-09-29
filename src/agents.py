@@ -1,11 +1,10 @@
 import os
 from datetime import datetime
 
-from IPython.display import Image, display
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt import create_react_agent
-from .utils import format_messages, show_prompt, stream_agent
+from .utils import format_messages
 
 from .file_tools import ls, read_file, write_file
 from .prompts import (
@@ -59,8 +58,8 @@ MAX_CONCURRENT_RESEARCH_UNITS = os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 3)
 MAX_RESEARCHER_ITERATIONS = os.getenv("MAX_RESEARCHER_ITERATIONS", 3)
 
 # Tools
-sub_agent_tools = [tavily_search, think_tool]
-built_in_tools = [ls, read_file, write_file, write_todos, think_tool]
+SUB_AGENT_TOOLS = [tavily_search, think_tool]
+BUILT_IN_TOOLS = [ls, read_file, write_file, write_todos, think_tool]
 
 # Create research sub-agent
 SUB_AGENT_RESEARCHER = {
@@ -70,59 +69,43 @@ SUB_AGENT_RESEARCHER = {
     "tools": ["tavily_search", "think_tool"],
 }
 
-# Create task tool to delegate tasks to research sub-agent
-task_tool = _create_task_tool(
-    sub_agent_tools, [SUB_AGENT_RESEARCHER], SUPERVISOR_MODEL, DeepAgentState
-)
-
-delegation_tools = [task_tool]
-all_tools = sub_agent_tools + built_in_tools + delegation_tools
-
-# Build prompt
-SUBAGENT_INSTRUCTIONS = SUBAGENT_USAGE_INSTRUCTIONS.format(
+# Build prompts
+RESEARCHER_SUB_AGENT_PROMPT = SUBAGENT_USAGE_INSTRUCTIONS.format(
     max_concurrent_research_units=MAX_CONCURRENT_RESEARCH_UNITS,
     max_researcher_iterations=MAX_RESEARCHER_ITERATIONS,
     date=datetime.now().strftime("%a %b %-d, %Y"),
 )
+SUPERVISOR_INSTRUCTIONS = (
+    "# TODO MANAGEMENT\n"
+    + TODO_USAGE_INSTRUCTIONS
+    + "\n\n"
+    + "=" * 80
+    + "\n\n"
+    + "# FILE SYSTEM USAGE\n"
+    + FILE_USAGE_INSTRUCTIONS
+    + "\n\n"
+    + "=" * 80
+    + "\n\n"
+    + "# SUB-AGENT DELEGATION\n"
+    + RESEARCHER_SUB_AGENT_PROMPT
+)
 
-def run_agent(user_input, use_local=False):
+def run_agent(user_input) -> None:
     """Run the agent with the given user input.
     
     Args:
         user_input (str): The user's input/query
-        use_local (bool): If True, use local Ollama model; if False, use Anthropic Claude
     """
-    # Get the appropriate model based on the use_local flag
-    current_model = SUPERVISOR_MODEL
-    
     # Create task tool with the current model
     current_task_tool = _create_task_tool(
-        sub_agent_tools, [SUB_AGENT_RESEARCHER], current_model, DeepAgentState
+        SUB_AGENT_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState
     )   
-    
     # Update tools list with the current task tool
     current_delegation_tools = [current_task_tool]
-    current_all_tools = sub_agent_tools + built_in_tools + current_delegation_tools
-    
-    INSTRUCTIONS = (
-        "# TODO MANAGEMENT\n"
-        + TODO_USAGE_INSTRUCTIONS
-        + "\n\n"
-        + "=" * 80
-        + "\n\n"
-        + "# FILE SYSTEM USAGE\n"
-        + FILE_USAGE_INSTRUCTIONS
-        + "\n\n"
-        + "=" * 80
-        + "\n\n"
-        + "# SUB-AGENT DELEGATION\n"
-        + SUBAGENT_INSTRUCTIONS
-    )
-
+    current_all_tools = SUB_AGENT_TOOLS + BUILT_IN_TOOLS + current_delegation_tools
     agent = create_react_agent(
-        current_model, current_all_tools, prompt=INSTRUCTIONS, state_schema=DeepAgentState
+        SUPERVISOR_MODEL, current_all_tools, prompt=SUPERVISOR_INSTRUCTIONS, state_schema=DeepAgentState
     )
-
     result = agent.invoke(
         {
             "messages": [
@@ -133,5 +116,4 @@ def run_agent(user_input, use_local=False):
             ],
         }
     )
-
     format_messages(result["messages"])
