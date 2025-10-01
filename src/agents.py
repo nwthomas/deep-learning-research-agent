@@ -1,6 +1,3 @@
-import os
-from datetime import datetime
-
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt import create_react_agent
@@ -28,7 +25,7 @@ from .todo_tools import write_todos
 
 def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, model_provider: str) -> BaseChatModel:
     """Builds a chat model with the given parameters.
-    
+
     Args:
         model_api_key: The API key for the model
         model_base_url: The base URL for the model
@@ -38,20 +35,37 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
     Returns:
         A chat model
     """
-    model = init_chat_model(
-        model=model_name,
-        model_provider=model_provider,
-        base_url=model_base_url,
-        api_key=model_api_key,
-        temperature=0.0
-    )
+    # Build kwargs for init_chat_model, excluding empty values
+    kwargs = {
+        "model": model_name,
+        "temperature": 0.0
+    }
+
+    if model_base_url != "":
+        kwargs["base_url"] = model_base_url
+    if model_api_key != "":
+        kwargs["api_key"] = model_api_key
+    if model_provider != "":
+        kwargs["model_provider"] = model_provider
+
+    model = init_chat_model(**kwargs)
     return model
 
 # Supervisor model used as main agent overseeing sub-agents
-SUPERVISOR_MODEL = build_chat_model(SUPERVISOR_MODEL_API_KEY, SUPERVISOR_MODEL_BASE_URL, SUPERVISOR_MODEL_NAME, SUPERVISOR_MODEL_PROVIDER)
+SUPERVISOR_MODEL = build_chat_model(
+    SUPERVISOR_MODEL_API_KEY,
+    SUPERVISOR_MODEL_BASE_URL,
+    SUPERVISOR_MODEL_NAME,
+    SUPERVISOR_MODEL_PROVIDER
+)
 
 # Researcher model used for conducting research
-RESEARCHER_MODEL = build_chat_model(RESEARCHER_MODEL_API_KEY, RESEARCHER_MODEL_BASE_URL, RESEARCHER_MODEL_NAME, RESEARCHER_MODEL_PROVIDER)
+RESEARCHER_MODEL = build_chat_model(
+    RESEARCHER_MODEL_API_KEY,
+    RESEARCHER_MODEL_BASE_URL,
+    RESEARCHER_MODEL_NAME,
+    RESEARCHER_MODEL_PROVIDER
+)
 
 # Tools
 SUB_AGENT_TOOLS = [tavily_search, think_tool]

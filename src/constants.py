@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Supervisor model used as main agent overseeing sub-agents
 SUPERVISOR_MODEL_API_KEY = os.getenv("SUPERVISOR_MODEL_API_KEY", "")
