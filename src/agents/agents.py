@@ -1,7 +1,7 @@
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt import create_react_agent
-from .utils import format_messages
+from .utils import stream_agent
 from ..tools import (
     ls,
     read_file,
@@ -84,30 +84,28 @@ SUB_AGENT_RESEARCHER = {
     "tools": ["tavily_search", "think_tool", "read_file"],
 }
 
-def run_agent(user_input) -> None:
+async def run_agent(user_input) -> None:
     """Run the agent with the given user input.
-    
+
     Args:
         user_input (str): The user's input/query
     """
     # Create task tool with the current model
     current_task_tool = _create_task_tool(
         SUB_AGENT_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState
-    )   
+    )
     # Update tools list with the current task tool
     current_delegation_tools = [current_task_tool]
     current_all_tools = SUB_AGENT_TOOLS + BUILT_IN_TOOLS + current_delegation_tools
     agent = create_react_agent(
         SUPERVISOR_MODEL, current_all_tools, prompt=SUPERVISOR_INSTRUCTIONS, state_schema=DeepAgentState
     )
-    result = agent.invoke(
-        {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": user_input,
-                }
-            ],
-        }
-    )
-    format_messages(result["messages"])
+    query = {
+        "messages": [
+            {
+                "role": "user",
+                "content": user_input,
+            }
+        ],
+    }
+    await stream_agent(agent, query)
