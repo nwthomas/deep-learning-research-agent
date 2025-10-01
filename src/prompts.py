@@ -4,6 +4,12 @@ This module contains all the system prompts, tool descriptions, and instruction
 templates used throughout the deep agents educational framework.
 """
 
+from datetime import datetime
+from .constants import (
+    MAX_CONCURRENT_RESEARCH_UNITS,
+    MAX_RESEARCHER_ITERATIONS,
+)
+
 WRITE_TODOS_DESCRIPTION = """Create and manage structured task lists for tracking progress through complex workflows.
 
 ## When to Use
@@ -197,3 +203,24 @@ Your role is to coordinate research by delegating specific research tasks to sub
 - Sub-agents can't see each other's work - provide complete standalone instructions
 - Use clear, specific language - avoid acronyms or abbreviations in task descriptions
 </Scaling Rules>"""
+
+# Build prompts
+RESEARCHER_SUB_AGENT_PROMPT = SUBAGENT_USAGE_INSTRUCTIONS.format(
+    max_concurrent_research_units=MAX_CONCURRENT_RESEARCH_UNITS,
+    max_researcher_iterations=MAX_RESEARCHER_ITERATIONS,
+    date=datetime.now().strftime("%a %b %-d, %Y"),
+)
+SUPERVISOR_INSTRUCTIONS = (
+    "# TODO MANAGEMENT\n"
+    + TODO_USAGE_INSTRUCTIONS
+    + "\n\n"
+    + "=" * 80
+    + "\n\n"
+    + "# FILE SYSTEM USAGE\n"
+    + FILE_USAGE_INSTRUCTIONS
+    + "\n\n"
+    + "=" * 80
+    + "\n\n"
+    + "# SUB-AGENT DELEGATION\n"
+    + RESEARCHER_SUB_AGENT_PROMPT
+)

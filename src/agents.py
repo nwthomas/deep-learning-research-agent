@@ -8,10 +8,18 @@ from .utils import format_messages
 
 from .file_tools import ls, read_file, write_file
 from .prompts import (
-    FILE_USAGE_INSTRUCTIONS,
     RESEARCHER_INSTRUCTIONS,
-    SUBAGENT_USAGE_INSTRUCTIONS,
-    TODO_USAGE_INSTRUCTIONS,
+    SUPERVISOR_INSTRUCTIONS,
+)
+from .constants import (
+    SUPERVISOR_MODEL_API_KEY,
+    SUPERVISOR_MODEL_BASE_URL,
+    SUPERVISOR_MODEL_NAME,
+    SUPERVISOR_MODEL_PROVIDER,
+    RESEARCHER_MODEL_API_KEY,
+    RESEARCHER_MODEL_BASE_URL,
+    RESEARCHER_MODEL_NAME,
+    RESEARCHER_MODEL_PROVIDER,
 )
 from .research_tools import tavily_search, think_tool, get_today_str
 from .state import DeepAgentState
@@ -40,22 +48,10 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
     return model
 
 # Supervisor model used as main agent overseeing sub-agents
-SUPERVISOR_MODEL_API_KEY = os.getenv("SUPERVISOR_MODEL_API_KEY", "")
-SUPERVISOR_MODEL_BASE_URL = os.getenv("SUPERVISOR_MODEL_BASE_URL", "")
-SUPERVISOR_MODEL_NAME = os.getenv("SUPERVISOR_MODEL_NAME", "")
-SUPERVISOR_MODEL_PROVIDER = os.getenv("SUPERVISOR_MODEL_PROVIDER", "")
 SUPERVISOR_MODEL = build_chat_model(SUPERVISOR_MODEL_API_KEY, SUPERVISOR_MODEL_BASE_URL, SUPERVISOR_MODEL_NAME, SUPERVISOR_MODEL_PROVIDER)
 
 # Researcher model used for conducting research
-RESEARCHER_MODEL_API_KEY = os.getenv("RESEARCHER_MODEL_API_KEY", "")
-RESEARCHER_MODEL_BASE_URL = os.getenv("RESEARCHER_MODEL_BASE_URL", "")
-RESEARCHER_MODEL_NAME = os.getenv("RESEARCHER_MODEL_NAME", "")
-RESEARCHER_MODEL_PROVIDER = os.getenv("RESEARCHER_MODEL_PROVIDER", "")
 RESEARCHER_MODEL = build_chat_model(RESEARCHER_MODEL_API_KEY, RESEARCHER_MODEL_BASE_URL, RESEARCHER_MODEL_NAME, RESEARCHER_MODEL_PROVIDER)
-
-# Limits on resource usage
-MAX_CONCURRENT_RESEARCH_UNITS = os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 3)
-MAX_RESEARCHER_ITERATIONS = os.getenv("MAX_RESEARCHER_ITERATIONS", 3)
 
 # Tools
 SUB_AGENT_TOOLS = [tavily_search, think_tool]
@@ -68,27 +64,6 @@ SUB_AGENT_RESEARCHER = {
     "prompt": RESEARCHER_INSTRUCTIONS.format(date=get_today_str()),
     "tools": ["tavily_search", "think_tool"],
 }
-
-# Build prompts
-RESEARCHER_SUB_AGENT_PROMPT = SUBAGENT_USAGE_INSTRUCTIONS.format(
-    max_concurrent_research_units=MAX_CONCURRENT_RESEARCH_UNITS,
-    max_researcher_iterations=MAX_RESEARCHER_ITERATIONS,
-    date=datetime.now().strftime("%a %b %-d, %Y"),
-)
-SUPERVISOR_INSTRUCTIONS = (
-    "# TODO MANAGEMENT\n"
-    + TODO_USAGE_INSTRUCTIONS
-    + "\n\n"
-    + "=" * 80
-    + "\n\n"
-    + "# FILE SYSTEM USAGE\n"
-    + FILE_USAGE_INSTRUCTIONS
-    + "\n\n"
-    + "=" * 80
-    + "\n\n"
-    + "# SUB-AGENT DELEGATION\n"
-    + RESEARCHER_SUB_AGENT_PROMPT
-)
 
 def run_agent(user_input) -> None:
     """Run the agent with the given user input.
