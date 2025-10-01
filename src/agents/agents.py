@@ -4,11 +4,11 @@ from langgraph.prebuilt import create_react_agent
 from ..utils import format_messages
 
 from ..file_tools import ls, read_file, write_file
-from ..prompts import (
+from .prompts import (
     RESEARCHER_INSTRUCTIONS,
     SUPERVISOR_INSTRUCTIONS,
 )
-from ..constants import (
+from .constants import (
     SUPERVISOR_MODEL_API_KEY,
     SUPERVISOR_MODEL_BASE_URL,
     SUPERVISOR_MODEL_NAME,

@@ -1,9 +1,5 @@
 import argparse
-import os
-from dotenv import load_dotenv
 from src import run_agent
-
-load_dotenv()
 
 def main():
     parser = argparse.ArgumentParser(description="Deep Learning Research Agent")
