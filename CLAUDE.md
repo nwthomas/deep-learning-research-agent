@@ -4,14 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Running the Agent
+### Running the Server
 ```bash
-# Run with query (required)
-make run QUERY="your research question here"
+# Run FastAPI server
+make run
+# or
+uv run python main.py
 
-# Direct execution
-uv run python main.py --query "your research question here"
+# Run in development mode with auto-reload
+make dev
 ```
+
+**Server Endpoints:**
+- Health check: `GET http://localhost:8000/health`
+- WebSocket research: `ws://localhost:8000/ws/research`
+- HTTP research: `POST http://localhost:8000/research`
 
 ### Dependencies
 ```bash

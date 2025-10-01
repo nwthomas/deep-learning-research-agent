@@ -1,13 +1,19 @@
-import argparse
-import asyncio
-from src import run_agent
+"""
+Deep Learning Research Agent FastAPI Server
 
-async def main():
-    parser = argparse.ArgumentParser(description="Deep Learning Research Agent")
-    parser.add_argument("--query", type=str, required=True, help="Research query to process")
+Run with: python main.py
+Server will be available at http://localhost:8000
+WebSocket endpoint: ws://localhost:8000/ws/research
+"""
 
-    args = parser.parse_args()
-    await run_agent(args.query)
+import uvicorn
+from src import app
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        log_level="info",
+        reload=False
+    )

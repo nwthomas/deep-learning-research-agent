@@ -1,6 +1,8 @@
 """Utility functions for displaying messages and prompts in Jupyter notebooks."""
 
 import json
+from datetime import datetime
+from typing import Dict, Any, AsyncGenerator
 
 from rich.console import Console
 from rich.panel import Panel
@@ -116,3 +118,100 @@ async def stream_agent(agent, query, config=None):
             current_state = event
 
     return current_state
+
+
+async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerator[Dict[str, Any], None]:
+    """Stream agent execution and yield WebSocket events."""
+    try:
+        async for graph_name, stream_mode, event in agent.astream(
+            query,
+            stream_mode=["updates", "values"],
+            subgraphs=True,
+            config=config
+        ):
+            timestamp = datetime.now().isoformat()
+
+            if stream_mode == "updates":
+                node, result = list(event.items())[0]
+
+                # Send status update
+                yield {
+                    "event_type": "status_update",
+                    "data": {
+                        "graph": graph_name if len(graph_name) > 0 else "root",
+                        "node": node,
+                        "status": "processing"
+                    },
+                    "timestamp": timestamp
+                }
+
+                # Process messages and tool calls
+                for key in result.keys():
+                    if "messages" in key:
+                        for message in result[key]:
+                            # Handle tool calls
+                            if hasattr(message, "tool_calls") and message.tool_calls:
+                                for tool_call in message.tool_calls:
+                                    yield {
+                                        "event_type": "tool_call",
+                                        "data": {
+                                            "tool_name": tool_call.get("name", "unknown"),
+                                            "args": tool_call.get("args", {}),
+                                            "tool_id": tool_call.get("id", "unknown")
+                                        },
+                                        "timestamp": timestamp
+                                    }
+
+                            # Handle Anthropic-style tool calls in content
+                            if isinstance(message.content, list):
+                                for item in message.content:
+                                    if item.get("type") == "tool_use":
+                                        yield {
+                                            "event_type": "tool_call",
+                                            "data": {
+                                                "tool_name": item.get("name", "unknown"),
+                                                "args": item.get("input", {}),
+                                                "tool_id": item.get("id", "unknown")
+                                            },
+                                            "timestamp": timestamp
+                                        }
+
+                            # Handle text content
+                            content = format_message_content(message)
+                            if content and content.strip():
+                                msg_type = message.__class__.__name__.replace("Message", "")
+                                yield {
+                                    "event_type": "result_chunk",
+                                    "data": {
+                                        "content": content,
+                                        "message_type": msg_type,
+                                        "node": node,
+                                        "graph": graph_name if len(graph_name) > 0 else "root"
+                                    },
+                                    "timestamp": timestamp
+                                }
+                        break
+
+            elif stream_mode == "values":
+                current_state = event
+
+        # Send completion event
+        yield {
+            "event_type": "completed",
+            "data": {
+                "message": "Research completed successfully",
+                "final_state": "completed"
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        # Send error event
+        yield {
+            "event_type": "error",
+            "data": {
+                "message": f"Agent execution failed: {str(e)}",
+                "error_type": type(e).__name__
+            },
+            "timestamp": datetime.now().isoformat()
+        }

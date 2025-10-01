@@ -1,6 +1,10 @@
-# Run the project
+# Run the FastAPI server
 run:
-	uv run python main.py $(if $(QUERY),--query "$(QUERY)")
+	uv run python main.py
+
+# Run the server in development mode with reload
+dev:
+	uv run uvicorn src.api.server:app --host 0.0.0.0 --port 8000 --reload
 
 # Sync the project
 sync:
