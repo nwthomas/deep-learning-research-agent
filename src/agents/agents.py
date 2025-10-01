@@ -1,7 +1,7 @@
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt import create_react_agent
-from ..utils import format_messages
+from .utils import format_messages
 from ..tools import (
     ls,
     read_file,
