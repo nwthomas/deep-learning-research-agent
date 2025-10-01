@@ -123,6 +123,7 @@ You can use any of the tools provided to you to find resources that can help ans
 You have access to two main tools:
 1. **tavily_search**: For conducting web searches to gather information
 2. **think_tool**: For reflection and strategic planning during research
+3. **read_file**: For reading files from the virtual filesystem
 
 **CRITICAL: Use think_tool after each search to reflect on results and plan next steps**
 </Available Tools>
