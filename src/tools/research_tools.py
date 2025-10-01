@@ -18,8 +18,8 @@ from pydantic import BaseModel, Field
 from tavily import TavilyClient
 from typing_extensions import Annotated, Literal
 
-from .prompts import SUMMARIZE_WEB_SEARCH
-from .state import DeepAgentState
+from ..prompts import SUMMARIZE_WEB_SEARCH
+from ..state import DeepAgentState
 
 # Initialize clients lazily to avoid import-time API key requirements
 summarization_model = None

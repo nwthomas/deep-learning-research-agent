@@ -5,7 +5,7 @@ templates used throughout the deep agents educational framework.
 """
 
 from datetime import datetime
-from .constants import (
+from ..constants import (
     MAX_CONCURRENT_RESEARCH_UNITS,
     MAX_RESEARCHER_ITERATIONS,
 )
