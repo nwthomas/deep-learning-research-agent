@@ -8,9 +8,20 @@ A multipurpose deep learning research agent 🔗
 
 Work for this repository is housed in this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
 
-## Repository Setup
+## Setup
 
-It's recommended to use Claude Code with this repository. There's a `CLAUDE.md` file to govern how the model interacts with this codebase.
+### Coding
+
+It's recommended to use Claude Code for coding within this repository. There's already a `CLAUDE.md` file to govern how the model interacts with this codebase.
+
+For more on Claude Code, see the [Anthropic Documentation](https://www.claude.com/product/claude-code).
+
+### Repository
+
+You'll need the following setup for running this codebase correctly:
+
+1. [Python](https://www.python.org) (through [Pyenv](https://github.com/pyenv/pyenv))
+2. [Docker](https://www.docker.com)
 
 First, ensure you have the proper Python version locally. See the [.python-version](./.python-version) file for the recommended versioning.
 
@@ -48,7 +59,15 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-Finally, setup formatting for the codebase (particularly on save). It's recommended to add the following to your IDE's `settings.json (in Cursor or VS Code, although you may be able to figure out an analogous setup in another IDE of your choice):
+Finally, you will need to install Docker in order to run this codebase locally. The easiest way to do this is to just install and setup Docker Desktop. To do that, use one of the following links:
+
+1. [Docker Desktop MacOS](https://docs.docker.com/desktop/setup/install/mac-install)
+2. [Docker Desktop Linux](https://docs.docker.com/desktop/setup/install/linux)
+3. [Docker Desktop Windows](https://docs.docker.com/desktop/setup/install/windows-install)
+
+### IDE
+
+You can setup formatting for the codebase (particularly on save). It's recommended to add the following to your IDE's `settings.json (in Cursor or VS Code, although you may be able to figure out an analogous setup in another IDE of your choice):
 
 ```json
 "[python]": {
