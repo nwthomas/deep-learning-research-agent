@@ -1,11 +1,27 @@
-# Run the FastAPI server
+# Start the server in detached mode
 run:
-	uv run python main.py
+	docker compose up -d
 
-# Run the FastAPI server in development mode with reload
+# Start the server with logs (development mode)
 dev:
-	uv run uvicorn app.api.server:app --host 0.0.0.0 --port 8000 --reload
+	docker compose up
 
-# Sync the project
+# Stop the server
+stop:
+	docker compose down
+
+# View logs
+logs:
+	docker compose logs -f research-agent
+
+# Access container shell
+shell:
+	docker compose exec research-agent /bin/bash
+
+# Rebuild and start
+rebuild:
+	docker compose up --build
+
+# Sync dependencies (for local development)
 sync:
 	uv sync

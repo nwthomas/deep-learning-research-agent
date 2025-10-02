@@ -6,29 +6,57 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Running the Server
 ```bash
-# Run FastAPI server
+# Start the server (builds image automatically)
 make run
 # or
-uv run python main.py
+docker compose up -d
 
-# Run in development mode with auto-reload
+# Start server with logs (development mode)
 make dev
+# or
+docker compose up
+
+# Stop the server
+make stop
+# or
+docker compose down
 ```
 
 **Server Endpoints:**
 - Health check: `GET http://localhost:8000/health`
 - WebSocket research: `ws://localhost:8000/ws/research`
 
+### Development Workflow
+```bash
+# View logs
+make logs
+# or
+docker compose logs -f research-agent
+
+# Access container shell
+make shell
+# or
+docker compose exec research-agent /bin/bash
+
+# Rebuild after code changes
+docker compose up --build
+```
+
 ### Dependencies
 ```bash
-# Sync dependencies
-make sync
-# or
-uv sync
-
-# Add new dependencies
-uv add package-name
+# Dependencies are managed through Docker
+# To add new dependencies:
+# 1. Add to pyproject.toml
+# 2. Run: uv lock (if working locally)
+# 3. Rebuild: docker compose up --build
 ```
+
+**Docker Features:**
+- Non-root execution (UID 1000) for security
+- Health checks and auto-restart policies
+- Optimized build with uv package manager and lock file
+- Automatic dependency installation
+- Ready for Helm/ArgoCD deployment in production
 
 ## Architecture Overview
 

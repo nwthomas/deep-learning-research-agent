@@ -1,0 +1,28 @@
+services:
+  research-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deep-learning-research-agent
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
