@@ -9,7 +9,7 @@ dependencies = [
     "langchain-anthropic==0.3.20",
     "langchain-community==0.3.30",
     "langchain-ollama==0.3.8",
-    "langchain-openai==0.3.33",
+    "langchain-openai==0.3.34",
     "langgraph==0.6.8",
     "markdownify==1.2.0",
     "python-dotenv==1.1.1",
