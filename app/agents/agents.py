@@ -40,10 +40,7 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
         A chat model
     """
     # Build kwargs for init_chat_model, excluding empty values
-    kwargs = {
-        "model": model_name,
-        "temperature": 0.0
-    }
+    kwargs = {"model": model_name, "temperature": 0.0}
 
     if model_base_url != "":
         kwargs["base_url"] = model_base_url
@@ -55,20 +52,15 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
     model = init_chat_model(**kwargs)
     return model
 
+
 # Supervisor model used as main agent overseeing sub-agents
 SUPERVISOR_MODEL = build_chat_model(
-    SUPERVISOR_MODEL_API_KEY,
-    SUPERVISOR_MODEL_BASE_URL,
-    SUPERVISOR_MODEL_NAME,
-    SUPERVISOR_MODEL_PROVIDER
+    SUPERVISOR_MODEL_API_KEY, SUPERVISOR_MODEL_BASE_URL, SUPERVISOR_MODEL_NAME, SUPERVISOR_MODEL_PROVIDER
 )
 
 # Researcher model used for conducting research
 RESEARCHER_MODEL = build_chat_model(
-    RESEARCHER_MODEL_API_KEY,
-    RESEARCHER_MODEL_BASE_URL,
-    RESEARCHER_MODEL_NAME,
-    RESEARCHER_MODEL_PROVIDER
+    RESEARCHER_MODEL_API_KEY, RESEARCHER_MODEL_BASE_URL, RESEARCHER_MODEL_NAME, RESEARCHER_MODEL_PROVIDER
 )
 
 # Tools
@@ -83,6 +75,7 @@ SUB_AGENT_RESEARCHER = {
     "tools": ["tavily_search", "think_tool", "read_file"],
 }
 
+
 async def run_agent(user_input) -> None:
     """Run the agent with the given user input.
 
@@ -90,9 +83,7 @@ async def run_agent(user_input) -> None:
         user_input (str): The user's input/query
     """
     # Create task tool with the current model
-    current_task_tool = _create_task_tool(
-        SUB_AGENT_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState
-    )
+    current_task_tool = _create_task_tool(SUB_AGENT_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState)
     # Update tools list with the current task tool
     current_delegation_tools = [current_task_tool]
     current_all_tools = SUB_AGENT_TOOLS + BUILT_IN_TOOLS + current_delegation_tools

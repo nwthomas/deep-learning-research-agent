@@ -12,7 +12,7 @@ WRITE_TODOS_DESCRIPTION = """Create and manage structured task lists for trackin
 
 ## When to Use
 - Multi-step or non-trivial tasks requiring coordination
-- When user provides multiple tasks or explicitly requests todo list  
+- When user provides multiple tasks or explicitly requests todo list
 - Avoid for single, trivial actions
 
 ## Structure
@@ -20,7 +20,7 @@ WRITE_TODOS_DESCRIPTION = """Create and manage structured task lists for trackin
 - Use clear, actionable content descriptions
 - Status must be: pending, in_progress, or completed
 
-## Best Practices  
+## Best Practices
 - Only one in_progress task at a time
 - Mark completed immediately when task is fully done
 - Always send the full updated list when making changes
@@ -28,7 +28,7 @@ WRITE_TODOS_DESCRIPTION = """Create and manage structured task lists for trackin
 
 ## Progress Updates
 - Call TodoWrite again to change task status or edit content
-- Reflect real-time progress; don't batch completions  
+- Reflect real-time progress; don't batch completions
 - If blocked, keep in_progress and add new task describing blocker
 
 ## Parameters
@@ -39,7 +39,7 @@ Updates agent state with new todo list."""
 
 TODO_USAGE_INSTRUCTIONS = """Based upon the user's request:
 1. Use the write_todos tool to create TODO at the start of a user request, per the tool description.
-2. After you accomplish a TODO, use the read_todos to read the TODOs in order to remind yourself of the plan. 
+2. After you accomplish a TODO, use the read_todos to read the TODOs in order to remind yourself of the plan.
 3. Reflect on what you've done and the TODO.
 4. Mark you task as completed, and proceed to the next TODO.
 5. Continue this process until you have completed all TODOs.
@@ -60,7 +60,7 @@ This tool returns file content with line numbers (like `cat -n`) and supports re
 
 Parameters:
 - file_path (required): Path to the file you want to read
-- offset (optional, default=0): Line number to start reading from  
+- offset (optional, default=0): Line number to start reading from
 - limit (optional, default=2000): Maximum number of lines to read
 
 Essential before making any edits to understand existing content. Always read a file before editing it."""
@@ -79,8 +79,8 @@ FILE_USAGE_INSTRUCTIONS = """You have access to a virtual file system to help yo
 
 ## Workflow Process
 1. **Orient**: Use ls() to see existing files before starting work
-2. **Save**: Use write_file() to store the user's request so that we can keep it for later 
-3. **Research**: Proceed with research. The search tool will write files.  
+2. **Save**: Use write_file() to store the user's request so that we can keep it for later
+3. **Research**: Proceed with research. The search tool will write files.
 4. **Read**: Once you are satisfied with the collected sources, read the files and use them to answer the user's question directly.
 """
 
@@ -92,7 +92,7 @@ SUMMARIZE_WEB_SEARCH = """You are creating a minimal summary for research steeri
 
 Create a VERY CONCISE summary focusing on:
 1. Main topic/subject in 1-2 sentences
-2. Key information type (facts, tutorial, news, analysis, etc.)  
+2. Key information type (facts, tutorial, news, analysis, etc.)
 3. Most significant 1-2 findings or points
 
 Keep the summary under 150 words total. The agent needs to know what's in this file to decide if it should search for more information or use this source.

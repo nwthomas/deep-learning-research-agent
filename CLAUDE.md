@@ -49,6 +49,48 @@ docker compose up --build
 # 1. Add to pyproject.toml
 # 2. Run: uv lock (if working locally)
 # 3. Rebuild: docker compose up --build
+
+# Install development dependencies locally
+make install-dev
+# or
+uv sync --extra dev
+```
+
+### Code Quality and Development Tools
+```bash
+# Format code
+make format
+# or
+uv run ruff format .
+
+# Lint code
+make lint
+# or
+uv run ruff check .
+
+# Type check
+make typecheck
+# or
+uv run mypy .
+
+# Run all quality checks
+make check
+
+# Format and lint (fix issues)
+make fix
+
+# Install pre-commit hooks
+make install-hooks
+# or
+uv run pre-commit install
+
+# Run pre-commit hooks manually
+make run-hooks
+# or
+uv run pre-commit run --all-files
+
+# Clean cache files
+make clean
 ```
 
 **Docker Features:**

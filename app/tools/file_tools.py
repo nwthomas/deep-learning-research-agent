@@ -85,8 +85,6 @@ def write_file(
     return Command(
         update={
             "files": files,
-            "messages": [
-                ToolMessage(f"Updated file {file_path}", tool_call_id=tool_call_id)
-            ],
+            "messages": [ToolMessage(f"Updated file {file_path}", tool_call_id=tool_call_id)],
         }
     )

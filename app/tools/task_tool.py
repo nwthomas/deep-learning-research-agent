@@ -5,13 +5,12 @@ with isolated contexts. Sub-agents prevent context clash by operating with clean
 context windows containing only their specific task description.
 """
 
-from typing import Annotated, NotRequired
+from typing import Annotated, NotRequired, TypedDict
 
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import BaseTool, InjectedToolCallId, tool
 from langgraph.prebuilt import InjectedState, create_react_agent
 from langgraph.types import Command
-from typing_extensions import TypedDict
 
 from ..prompts import TASK_DESCRIPTION_PREFIX
 from ..state import DeepAgentState
@@ -64,9 +63,7 @@ def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
         )
 
     # Generate description of available sub-agents for the tool description
-    other_agents_string = [
-        f"- {_agent['name']}: {_agent['description']}" for _agent in subagents
-    ]
+    other_agents_string = [f"- {_agent['name']}: {_agent['description']}" for _agent in subagents]
 
     @tool(description=TASK_DESCRIPTION_PREFIX.format(other_agents=other_agents_string))
     def task(
@@ -82,7 +79,9 @@ def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
         """
         # Validate requested agent type exists
         if subagent_type not in agents:
-            return f"Error: invoked agent of type {subagent_type}, the only allowed types are {[f'`{k}`' for k in agents]}"
+            return (
+                f"Error: invoked agent of type {subagent_type}, the only allowed types are {[f'`{k}`' for k in agents]}"
+            )
 
         # Get the requested sub-agent
         sub_agent = agents[subagent_type]
@@ -100,9 +99,7 @@ def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
                 "files": result.get("files", {}),  # Merge any file changes
                 "messages": [
                     # Sub-agent result becomes a ToolMessage in parent context
-                    ToolMessage(
-                        result["messages"][-1].content, tool_call_id=tool_call_id
-                    )
+                    ToolMessage(result["messages"][-1].content, tool_call_id=tool_call_id)
                 ],
             }
         )

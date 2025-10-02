@@ -11,7 +11,7 @@ from .websocket import manager
 app = FastAPI(
     title="Deep Learning Research Agent API",
     description="API for conducting deep learning research with streaming capabilities",
-    version="0.1.0"
+    version="0.1.0",
 )
 
 # Add CORS middleware
@@ -24,15 +24,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     """Health check endpoint."""
     return {"message": "Deep Learning Research Agent API is running"}
 
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
     return {"status": "healthy", "service": "deep-learning-research-agent"}
+
 
 @app.websocket("/ws/research")
 async def websocket_research_endpoint(websocket: WebSocket):
@@ -58,10 +61,8 @@ async def websocket_research_endpoint(websocket: WebSocket):
     try:
         await manager.handle_research_stream(websocket, client_id)
     except Exception as e:
-        await manager.send_json(client_id, {
-            "event_type": "error",
-            "data": {"message": f"Unexpected error: {str(e)}"},
-            "timestamp": None
-        })
+        await manager.send_json(
+            client_id, {"event_type": "error", "data": {"message": f"Unexpected error: {str(e)}"}, "timestamp": None}
+        )
     finally:
         manager.disconnect(client_id)

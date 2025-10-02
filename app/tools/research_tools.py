@@ -3,10 +3,12 @@
 This module provides search and content processing utilities for the research agent,
 including web search capabilities and content summarization tools.
 """
+
 import base64
 import os
 import uuid
 from datetime import datetime
+from typing import Annotated, Literal
 
 import httpx
 from langchain.chat_models import init_chat_model
@@ -17,7 +19,6 @@ from langgraph.types import Command
 from markdownify import markdownify
 from pydantic import BaseModel, Field
 from tavily import TavilyClient
-from typing_extensions import Annotated, Literal
 
 from ..prompts import SUMMARIZE_WEB_SEARCH
 from ..state import DeepAgentState
@@ -26,12 +27,14 @@ from ..state import DeepAgentState
 summarization_model = None
 tavily_client = None
 
+
 def get_summarization_model():
     """Get or initialize the summarization model."""
     global summarization_model
     if summarization_model is None:
         summarization_model = init_chat_model(model="anthropic:claude-3-5-sonnet-20241022")
     return summarization_model
+
 
 def get_tavily_client():
     """Get or initialize the Tavily client."""
@@ -40,20 +43,24 @@ def get_tavily_client():
         tavily_client = TavilyClient()
     return tavily_client
 
+
 class Summary(BaseModel):
     """Schema for webpage content summarization."""
+
     filename: str = Field(description="Name of the file to store.")
     summary: str = Field(description="Key learnings from the webpage.")
+
 
 def get_today_str() -> str:
     """Get current date in a human-readable format."""
     return datetime.now().strftime("%a %b %-d, %Y")
 
+
 def run_tavily_search(
-    search_query: str, 
-    max_results: int = 1, 
-    topic: Literal["general", "news", "finance"] = "general", 
-    include_raw_content: bool = True, 
+    search_query: str,
+    max_results: int = 1,
+    topic: Literal["general", "news", "finance"] = "general",
+    include_raw_content: bool = True,
 ) -> dict:
     """Perform search using Tavily API for a single query.
 
@@ -67,14 +74,10 @@ def run_tavily_search(
         Search results dictionary
     """
     client = get_tavily_client()
-    result = client.search(
-        search_query,
-        max_results=max_results,
-        include_raw_content=include_raw_content,
-        topic=topic
-    )
+    result = client.search(search_query, max_results=max_results, include_raw_content=include_raw_content, topic=topic)
 
     return result
+
 
 def summarize_webpage_content(webpage_content: str) -> Summary:
     """Summarize webpage content using the configured summarization model.
@@ -91,12 +94,9 @@ def summarize_webpage_content(webpage_content: str) -> Summary:
         structured_model = model.with_structured_output(Summary)
 
         # Generate summary
-        summary_and_filename = structured_model.invoke([
-            HumanMessage(content=SUMMARIZE_WEB_SEARCH.format(
-                webpage_content=webpage_content, 
-                date=get_today_str()
-            ))
-        ])
+        summary_and_filename = structured_model.invoke(
+            [HumanMessage(content=SUMMARIZE_WEB_SEARCH.format(webpage_content=webpage_content, date=get_today_str()))]
+        )
 
         return summary_and_filename
 
@@ -104,8 +104,9 @@ def summarize_webpage_content(webpage_content: str) -> Summary:
         # Return a basic summary object on failure
         return Summary(
             filename="search_result.md",
-            summary=webpage_content[:1000] + "..." if len(webpage_content) > 1000 else webpage_content
+            summary=webpage_content[:1000] + "..." if len(webpage_content) > 1000 else webpage_content,
         )
+
 
 def process_search_results(results: dict) -> list[dict]:
     """Process search results by summarizing content where available.
@@ -121,10 +122,9 @@ def process_search_results(results: dict) -> list[dict]:
     # Create a client for HTTP requests
     HTTPX_CLIENT = httpx.Client()
 
-    for result in results.get('results', []):
-
-        # Get url 
-        url = result['url']
+    for result in results.get("results", []):
+        # Get url
+        url = result["url"]
 
         # Read url
         response = HTTPX_CLIENT.get(url)
@@ -135,10 +135,9 @@ def process_search_results(results: dict) -> list[dict]:
             summary_obj = summarize_webpage_content(raw_content)
         else:
             # Use Tavily's generated summary
-            raw_content = result.get('raw_content', '')
+            raw_content = result.get("raw_content", "")
             summary_obj = Summary(
-                filename="URL_error.md",
-                summary=result.get('content', 'Error reading URL; try another search.')
+                filename="URL_error.md", summary=result.get("content", "Error reading URL; try another search.")
             )
 
         # uniquify file names
@@ -146,15 +145,18 @@ def process_search_results(results: dict) -> list[dict]:
         name, ext = os.path.splitext(summary_obj.filename)
         summary_obj.filename = f"{name}_{uid}{ext}"
 
-        processed_results.append({
-            'url': result['url'],
-            'title': result['title'],
-            'summary': summary_obj.summary,
-            'filename': summary_obj.filename,
-            'raw_content': raw_content,
-        })
+        processed_results.append(
+            {
+                "url": result["url"],
+                "title": result["title"],
+                "summary": summary_obj.summary,
+                "filename": summary_obj.filename,
+                "raw_content": raw_content,
+            }
+        )
 
     return processed_results
+
 
 @tool(parse_docstring=True)
 def tavily_search(
@@ -185,7 +187,7 @@ def tavily_search(
         max_results=max_results,
         topic=topic,
         include_raw_content=True,
-    ) 
+    )
 
     # Process and summarize results
     processed_results = process_search_results(search_results)
@@ -195,9 +197,9 @@ def tavily_search(
     saved_files = []
     summaries = []
 
-    for i, result in enumerate(processed_results):
+    for _, result in enumerate(processed_results):
         # Use the AI-generated filename from summarization
-        filename = result['filename']
+        filename = result["filename"]
 
         # Create file content with full details
         file_content = f"""# Search Result: {result['title']}
@@ -228,11 +230,10 @@ Files: {', '.join(saved_files)}
     return Command(
         update={
             "files": files,
-            "messages": [
-                ToolMessage(summary_text, tool_call_id=tool_call_id)
-            ],
+            "messages": [ToolMessage(summary_text, tool_call_id=tool_call_id)],
         }
     )
+
 
 @tool(parse_docstring=True)
 def think_tool(reflection: str) -> str:

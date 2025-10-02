@@ -6,10 +6,9 @@ This module defines the extended agent state structure that supports:
 - Efficient state merging with reducer functions
 """
 
-from typing import Annotated, Literal, NotRequired
+from typing import Annotated, Literal, NotRequired, TypedDict
 
 from langgraph.prebuilt.chat_agent_executor import AgentState
-from typing_extensions import TypedDict
 
 
 class Todo(TypedDict):

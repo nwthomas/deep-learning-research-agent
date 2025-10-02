@@ -1,8 +1,9 @@
 """Utility functions for displaying messages and prompts in Jupyter notebooks."""
 
 import json
+from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import Any, AsyncGenerator, Dict
+from typing import Any
 
 from rich.console import Console
 from rich.panel import Panel
@@ -33,11 +34,7 @@ def format_message_content(message):
         parts.append(str(message.content))
 
     # Handle tool calls attached to the message (OpenAI format) - only if not already processed
-    if (
-        not tool_calls_processed
-        and hasattr(message, "tool_calls")
-        and message.tool_calls
-    ):
+    if not tool_calls_processed and hasattr(message, "tool_calls") and message.tool_calls:
         for tool_call in message.tool_calls:
             parts.append(f"\n🔧 Tool Call: {tool_call['name']}")
             parts.append(f"   Args: {json.dumps(tool_call['args'], indent=2, ensure_ascii=False)}")
@@ -78,12 +75,8 @@ def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "bl
     # Create a formatted display of the prompt
     formatted_text = Text(prompt_text)
     formatted_text.highlight_regex(r"<[^>]+>", style="bold blue")  # Highlight XML tags
-    formatted_text.highlight_regex(
-        r"##[^#\n]+", style="bold magenta"
-    )  # Highlight headers
-    formatted_text.highlight_regex(
-        r"###[^#\n]+", style="bold cyan"
-    )  # Highlight sub-headers
+    formatted_text.highlight_regex(r"##[^#\n]+", style="bold magenta")  # Highlight headers
+    formatted_text.highlight_regex(r"###[^#\n]+", style="bold cyan")  # Highlight sub-headers
 
     # Display in a panel for better presentation
     console.print(
@@ -95,20 +88,19 @@ def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "bl
         )
     )
 
+
 # more expressive runner
 async def stream_agent(agent, query, config=None):
     async for graph_name, stream_mode, event in agent.astream(
-        query,
-        stream_mode=["updates", "values"], 
-        subgraphs=True,
-        config=config
+        query, stream_mode=["updates", "values"], subgraphs=True, config=config
     ):
+        current_state = None
         if stream_mode == "updates":
             print(f'Graph: {graph_name if len(graph_name) > 0 else "root"}')
-            
+
             node, result = list(event.items())[0]
-            print(f'Node: {node}')
-            
+            print(f"Node: {node}")
+
             for key in result.keys():
                 if "messages" in key:
                     # print(f"Messages key: {key}")
@@ -120,14 +112,11 @@ async def stream_agent(agent, query, config=None):
     return current_state
 
 
-async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerator[Dict[str, Any], None]:
+async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerator[dict[str, Any], None]:
     """Stream agent execution and yield WebSocket events."""
     try:
         async for graph_name, stream_mode, event in agent.astream(
-            query,
-            stream_mode=["updates", "values"],
-            subgraphs=True,
-            config=config
+            query, stream_mode=["updates", "values"], subgraphs=True, config=config
         ):
             timestamp = datetime.now().isoformat()
 
@@ -140,9 +129,9 @@ async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerato
                     "data": {
                         "graph": graph_name if len(graph_name) > 0 else "root",
                         "node": node,
-                        "status": "processing"
+                        "status": "processing",
                     },
-                    "timestamp": timestamp
+                    "timestamp": timestamp,
                 }
 
                 # Process messages and tool calls
@@ -157,9 +146,9 @@ async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerato
                                         "data": {
                                             "tool_name": tool_call.get("name", "unknown"),
                                             "args": tool_call.get("args", {}),
-                                            "tool_id": tool_call.get("id", "unknown")
+                                            "tool_id": tool_call.get("id", "unknown"),
                                         },
-                                        "timestamp": timestamp
+                                        "timestamp": timestamp,
                                     }
 
                             # Handle Anthropic-style tool calls in content
@@ -171,9 +160,9 @@ async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerato
                                             "data": {
                                                 "tool_name": item.get("name", "unknown"),
                                                 "args": item.get("input", {}),
-                                                "tool_id": item.get("id", "unknown")
+                                                "tool_id": item.get("id", "unknown"),
                                             },
-                                            "timestamp": timestamp
+                                            "timestamp": timestamp,
                                         }
 
                             # Handle text content
@@ -186,32 +175,23 @@ async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerato
                                         "content": content,
                                         "message_type": msg_type,
                                         "node": node,
-                                        "graph": graph_name if len(graph_name) > 0 else "root"
+                                        "graph": graph_name if len(graph_name) > 0 else "root",
                                     },
-                                    "timestamp": timestamp
+                                    "timestamp": timestamp,
                                 }
                         break
-
-            elif stream_mode == "values":
-                current_state = event
 
         # Send completion event
         yield {
             "event_type": "completed",
-            "data": {
-                "message": "Research completed successfully",
-                "final_state": "completed"
-            },
-            "timestamp": datetime.now().isoformat()
+            "data": {"message": "Research completed successfully", "final_state": "completed"},
+            "timestamp": datetime.now().isoformat(),
         }
 
     except Exception as e:
         # Send error event
         yield {
             "event_type": "error",
-            "data": {
-                "message": f"Agent execution failed: {str(e)}",
-                "error_type": type(e).__name__
-            },
-            "timestamp": datetime.now().isoformat()
+            "data": {"message": f"Agent execution failed: {str(e)}", "error_type": type(e).__name__},
+            "timestamp": datetime.now().isoformat(),
         }

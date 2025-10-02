@@ -1,7 +1,7 @@
 """WebSocket handler for streaming research results."""
 
 import json
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
 from langgraph.prebuilt import create_react_agent
@@ -24,7 +24,7 @@ class WebSocketManager:
     """Manages WebSocket connections and research streaming."""
 
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
+        self.active_connections: dict[str, WebSocket] = {}
 
     async def connect(self, websocket: WebSocket, client_id: str):
         """Accept a WebSocket connection."""
@@ -36,7 +36,7 @@ class WebSocketManager:
         if client_id in self.active_connections:
             del self.active_connections[client_id]
 
-    async def send_json(self, client_id: str, data: Dict[str, Any]):
+    async def send_json(self, client_id: str, data: dict[str, Any]):
         """Send JSON data to a specific client."""
         if client_id in self.active_connections:
             try:
@@ -54,15 +54,18 @@ class WebSocketManager:
             request = ResearchRequest(**request_data)
 
             # Send acknowledgment
-            await self.send_json(client_id, {
-                "event_type": "status_update",
-                "data": {
-                    "graph": "system",
-                    "node": "connection",
-                    "status": "connected",
-                    "message": f"Starting research for: {request.query}"
-                }
-            })
+            await self.send_json(
+                client_id,
+                {
+                    "event_type": "status_update",
+                    "data": {
+                        "graph": "system",
+                        "node": "connection",
+                        "status": "connected",
+                        "message": f"Starting research for: {request.query}",
+                    },
+                },
+            )
 
             # Create the agent
             current_task_tool = _create_task_tool(
@@ -72,10 +75,7 @@ class WebSocketManager:
             current_all_tools = SUB_AGENT_TOOLS + BUILT_IN_TOOLS + current_delegation_tools
 
             agent = create_react_agent(
-                SUPERVISOR_MODEL,
-                current_all_tools,
-                prompt=SUPERVISOR_INSTRUCTIONS,
-                state_schema=DeepAgentState
+                SUPERVISOR_MODEL, current_all_tools, prompt=SUPERVISOR_INSTRUCTIONS, state_schema=DeepAgentState
             )
 
             # Prepare query
@@ -95,18 +95,16 @@ class WebSocketManager:
         except WebSocketDisconnect:
             self.disconnect(client_id)
         except json.JSONDecodeError:
-            await self.send_json(client_id, {
-                "event_type": "error",
-                "data": {"message": "Invalid JSON format"},
-                "timestamp": None
-            })
+            await self.send_json(
+                client_id, {"event_type": "error", "data": {"message": "Invalid JSON format"}, "timestamp": None}
+            )
         except Exception as e:
-            await self.send_json(client_id, {
-                "event_type": "error",
-                "data": {"message": f"Error processing request: {str(e)}"},
-                "timestamp": None
-            })
+            await self.send_json(
+                client_id,
+                {"event_type": "error", "data": {"message": f"Error processing request: {str(e)}"}, "timestamp": None},
+            )
         finally:
             self.disconnect(client_id)
+
 
 manager = WebSocketManager()

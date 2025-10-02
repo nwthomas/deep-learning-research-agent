@@ -16,10 +16,8 @@ from ..prompts import WRITE_TODOS_DESCRIPTION
 from ..state import DeepAgentState, Todo
 
 
-@tool(description=WRITE_TODOS_DESCRIPTION,parse_docstring=True)
-def write_todos(
-    todos: list[Todo], tool_call_id: Annotated[str, InjectedToolCallId]
-) -> Command:
+@tool(description=WRITE_TODOS_DESCRIPTION, parse_docstring=True)
+def write_todos(todos: list[Todo], tool_call_id: Annotated[str, InjectedToolCallId]) -> Command:
     """Create or update the agent's TODO list for task planning and tracking.
 
     Args:
@@ -32,9 +30,7 @@ def write_todos(
     return Command(
         update={
             "todos": todos,
-            "messages": [
-                ToolMessage(f"Updated todo list to {todos}", tool_call_id=tool_call_id)
-            ],
+            "messages": [ToolMessage(f"Updated todo list to {todos}", tool_call_id=tool_call_id)],
         }
     )
 
