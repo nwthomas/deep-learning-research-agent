@@ -18,7 +18,6 @@ make dev
 **Server Endpoints:**
 - Health check: `GET http://localhost:8000/health`
 - WebSocket research: `ws://localhost:8000/ws/research`
-- HTTP research: `POST http://localhost:8000/research`
 
 ### Dependencies
 ```bash
@@ -38,9 +37,9 @@ This is a multi-agent deep learning research system built with LangChain and Lan
 ### Core Components
 
 **Agent Architecture:**
-- **Supervisor Agent** (`src/agents/agents.py`): Main orchestrating agent that manages task delegation and coordinates research
+- **Supervisor Agent** (`app/agents/agents.py`): Main orchestrating agent that manages task delegation and coordinates research
 - **Research Sub-Agent**: Specialized agent for conducting web research and gathering information
-- **State Management** (`src/state/state.py`): Extended LangGraph state with TODO tracking and virtual file system
+- **State Management** (`app/state/state.py`): Extended LangGraph state with TODO tracking and virtual file system
 
 **Key Features:**
 - **Multi-Model Support**: Configurable supervisor and researcher models via environment variables
@@ -50,16 +49,16 @@ This is a multi-agent deep learning research system built with LangChain and Lan
 
 ### Tools and Capabilities
 
-**Research Tools** (`src/tools/research_tools.py`):
+**Research Tools** (`app/tools/research_tools.py`):
 - `tavily_search`: Web search with content summarization and file storage
 - `think_tool`: Strategic reflection and decision-making tool
 
-**File Management** (`src/tools/file_tools.py`):
+**File Management** (`app/tools/file_tools.py`):
 - `ls`: List files in virtual filesystem
 - `read_file`: Read file content with pagination
 - `write_file`: Create/overwrite files in virtual filesystem
 
-**Task Management** (`src/tools/todo_tools.py`):
+**Task Management** (`app/tools/todo_tools.py`):
 - `write_todos`: Create and manage structured task lists
 
 ### Configuration
@@ -69,7 +68,7 @@ This is a multi-agent deep learning research system built with LangChain and Lan
 - Researcher model: `RESEARCHER_MODEL_*` variables
 - Research limits: `MAX_CONCURRENT_RESEARCH_UNITS`, `MAX_RESEARCHER_ITERATIONS`
 
-**Model Configuration** (`src/constants.py`):
+**Model Configuration** (`app/constants.py`):
 - Supports multiple providers via LangChain's `init_chat_model`
 - Configurable API keys, base URLs, and model names
 - Temperature set to 0.0 for deterministic responses
