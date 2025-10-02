@@ -2,7 +2,7 @@
 
 import json
 from datetime import datetime
-from typing import Dict, Any, AsyncGenerator
+from typing import Any, AsyncGenerator, Dict
 
 from rich.console import Console
 from rich.panel import Panel

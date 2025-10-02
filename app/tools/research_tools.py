@@ -3,9 +3,10 @@
 This module provides search and content processing utilities for the research agent,
 including web search capabilities and content summarization tools.
 """
+import base64
 import os
+import uuid
 from datetime import datetime
-import uuid, base64
 
 import httpx
 from langchain.chat_models import init_chat_model

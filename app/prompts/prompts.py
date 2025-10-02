@@ -5,10 +5,8 @@ templates used throughout the deep agents educational framework.
 """
 
 from datetime import datetime
-from ..constants import (
-    MAX_CONCURRENT_RESEARCH_UNITS,
-    MAX_RESEARCHER_ITERATIONS,
-)
+
+from ..constants import MAX_CONCURRENT_RESEARCH_UNITS, MAX_RESEARCHER_ITERATIONS
 
 WRITE_TODOS_DESCRIPTION = """Create and manage structured task lists for tracking progress through complex workflows.
 

@@ -6,12 +6,12 @@ context windows containing only their specific task description.
 """
 
 from typing import Annotated, NotRequired
-from typing_extensions import TypedDict
 
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import BaseTool, InjectedToolCallId, tool
 from langgraph.prebuilt import InjectedState, create_react_agent
 from langgraph.types import Command
+from typing_extensions import TypedDict
 
 from ..prompts import TASK_DESCRIPTION_PREFIX
 from ..state import DeepAgentState

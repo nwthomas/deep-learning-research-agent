@@ -1,8 +1,10 @@
 """Pydantic models for FastAPI request/response validation."""
 
-from typing import Dict, Any, Optional
-from pydantic import BaseModel
 from enum import Enum
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel
+
 
 class EventType(str, Enum):
     """Types of WebSocket events sent during research streaming."""

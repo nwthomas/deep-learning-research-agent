@@ -1,8 +1,11 @@
 """Deep Learning Research Agent FastAPI Server"""
 
 import asyncio
+
 import uvicorn
-from app import SERVER_HOST, SERVER_PORT, SERVER_LOG_LEVEL, SERVER_RELOAD
+
+from app import SERVER_HOST, SERVER_LOG_LEVEL, SERVER_PORT, SERVER_RELOAD
+
 
 async def main():
     uvicorn.run(

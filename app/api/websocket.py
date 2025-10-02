@@ -1,22 +1,24 @@
 """WebSocket handler for streaming research results."""
 
 import json
-from typing import Dict, Any
+from typing import Any, Dict
+
 from fastapi import WebSocket, WebSocketDisconnect
 from langgraph.prebuilt import create_react_agent
 
-from ..agents.utils import stream_agent_for_websocket
 from ..agents.agents import (
-    SUPERVISOR_MODEL,
-    RESEARCHER_MODEL,
-    SUB_AGENT_TOOLS,
-    SUB_AGENT_RESEARCHER,
     BUILT_IN_TOOLS,
+    RESEARCHER_MODEL,
+    SUB_AGENT_RESEARCHER,
+    SUB_AGENT_TOOLS,
+    SUPERVISOR_MODEL,
 )
-from ..tools import _create_task_tool
+from ..agents.utils import stream_agent_for_websocket
 from ..prompts import SUPERVISOR_INSTRUCTIONS
 from ..state import DeepAgentState
+from ..tools import _create_task_tool
 from .models import ResearchRequest
+
 
 class WebSocketManager:
     """Manages WebSocket connections and research streaming."""

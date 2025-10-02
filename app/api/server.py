@@ -1,8 +1,10 @@
 """FastAPI server for the deep learning research agent."""
 
 import uuid
+
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+
 from .websocket import manager
 
 # Create FastAPI app
