@@ -1,6 +1,6 @@
 """Pydantic models for FastAPI request/response validation."""
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from pydantic import BaseModel
 from enum import Enum
 
