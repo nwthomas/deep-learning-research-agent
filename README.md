@@ -69,6 +69,13 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
+After setting up Python and uv, you can run the following commands to fully configure dependencies and git hooks for this codebase:
+
+```base
+make sync-dev
+make install-hooks
+```
+
 Finally, you will need to install Docker in order to run this codebase locally. The easiest way to do this is to just install and setup Docker Desktop. To do that, use one of the following links:
 
 1. [Docker Desktop MacOS](https://docs.docker.com/desktop/setup/install/mac-install)
