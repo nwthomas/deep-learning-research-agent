@@ -4,7 +4,17 @@
 
 A multipurpose deep learning research agent 🔗
 
-## 🧱 Project Managements
+## Table of Contents
+
+1. [Project Management](#-project-management)
+2. [Setup](#setup)
+    - [Coding](#coding)
+    - [Repository](#repository)
+    - [IDE](#ide)
+    - [Environment Variables](#environment-variables)
+3. [Acknowledgements](#️-acknowledgements)
+
+## 🧱 Project Management
 
 Work for this repository is housed in this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
 
@@ -79,6 +89,33 @@ You can setup formatting for the codebase (particularly on save). It's recommend
     }
 }
 ```
+
+### Environment Variables
+
+Create a new `.env` file in the root of your local repository and set the required environment variables.
+
+This repository supports both cloud-based models as well as ones you might choose to run locally (such as with [Ollama](https://ollama.com) or [vLLM](https://docs.vllm.ai)).
+
+Here are two examples of configurations for cloud-based models and local, respectively. You'll need to change these for each agent in the environment variable list (and can actually customize them individually):
+
+```bash
+# Leave the SUPERVISOR_MODEL_BASE_URL and SUPERVISOR_MODEL_PROVIDER blank for Anthropic usage as those are set
+# automatically by LangChain.
+SUPERVISOR_MODEL_API_KEY=your_api_key_here
+SUPERVISOR_MODEL_BASE_URL=
+SUPERVISOR_MODEL_NAME=claude-sonnet-4-5-20250929
+SUPERVISOR_MODEL_PROVIDER=
+
+# Setup for a locally-run LLM. The SUPERVISOR_MODEL_API_KEY likely won't matter here (unless you have one set on the
+# process serving your model) and is just required by LangChain's package. For a list of all possible providers that
+# LangChain allows, see: https://python.langchain.com/api_reference/langchain/chat_models/langchain.chat_models.base.init_chat_model.html
+SUPERVISOR_MODEL_API_KEY=ollama
+SUPERVISOR_MODEL_BASE_URL=http://localhost:11434
+SUPERVISOR_MODEL_NAME=llama3.1:8b
+SUPERVISOR_MODEL_PROVIDER=ollama
+```
+
+Running `make dev` will automatically use your local `.env` file.
 
 ## 🙇🏻‍♂️ Acknowledgements
 
