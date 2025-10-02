@@ -5,8 +5,10 @@ with isolated contexts. Sub-agents prevent context clash by operating with clean
 context windows containing only their specific task description.
 """
 
+from collections.abc import Sequence
 from typing import Annotated, NotRequired, TypedDict
 
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import BaseTool, InjectedToolCallId, tool
 from langgraph.prebuilt import InjectedState, create_react_agent
@@ -25,7 +27,9 @@ class SubAgent(TypedDict):
     tools: NotRequired[list[str]]
 
 
-def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
+def _create_task_tool(
+    tools: Sequence[BaseTool], subagents: list[SubAgent], model: BaseLanguageModel, state_schema: type[DeepAgentState]
+) -> BaseTool:
     """Create a task delegation tool that enables context isolation through sub-agents.
 
     This function implements the core pattern for spawning specialized sub-agents with
@@ -57,7 +61,7 @@ def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
             _tools = [tools_by_name[t] for t in _agent["tools"]]
         else:
             # Default to all tools
-            _tools = tools
+            _tools = list(tools)
         agents[_agent["name"]] = create_react_agent(
             model, prompt=_agent["prompt"], tools=_tools, state_schema=state_schema
         )
@@ -71,7 +75,7 @@ def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
         subagent_type: str,
         state: Annotated[DeepAgentState, InjectedState],
         tool_call_id: Annotated[str, InjectedToolCallId],
-    ):
+    ) -> Command | str:
         """Delegate a task to a specialized sub-agent with isolated context.
 
         This creates a fresh context for the sub-agent containing only the task description,

@@ -12,7 +12,7 @@ from rich.text import Text
 console = Console()
 
 
-def format_message_content(message):
+def format_message_content(message: Any) -> str:
     """Convert message content to displayable string."""
     parts = []
     tool_calls_processed = False
@@ -43,7 +43,7 @@ def format_message_content(message):
     return "\n".join(parts)
 
 
-def format_messages(messages):
+def format_messages(messages: list[Any]) -> None:
     """Format and display a list of messages with Rich formatting."""
     for m in messages:
         msg_type = m.__class__.__name__.replace("Message", "")
@@ -59,12 +59,12 @@ def format_messages(messages):
             console.print(Panel(content, title=f"📝 {msg_type}", border_style="white"))
 
 
-def format_message(messages):
+def format_message(messages: list[Any]) -> None:
     """Alias for format_messages for backward compatibility."""
     return format_messages(messages)
 
 
-def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "blue"):
+def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "blue") -> None:
     """Display a prompt with rich formatting and XML tag highlighting.
 
     Args:
@@ -90,7 +90,7 @@ def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "bl
 
 
 # more expressive runner
-async def stream_agent(agent, query, config=None):
+async def stream_agent(agent: Any, query: Any, config: Any = None) -> Any:
     async for graph_name, stream_mode, event in agent.astream(
         query, stream_mode=["updates", "values"], subgraphs=True, config=config
     ):
@@ -112,7 +112,9 @@ async def stream_agent(agent, query, config=None):
     return current_state
 
 
-async def stream_agent_for_websocket(agent, query, config=None) -> AsyncGenerator[dict[str, Any], None]:
+async def stream_agent_for_websocket(
+    agent: Any, query: Any, config: Any = None
+) -> AsyncGenerator[dict[str, Any], None]:
     """Stream agent execution and yield WebSocket events."""
     try:
         async for graph_name, stream_mode, event in agent.astream(

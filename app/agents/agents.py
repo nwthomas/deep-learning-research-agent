@@ -24,6 +24,7 @@ from ..tools import (
     write_file,
     write_todos,
 )
+from ..tools.task_tool import SubAgent
 from .utils import stream_agent
 
 
@@ -68,7 +69,7 @@ SUB_AGENT_TOOLS = [tavily_search, think_tool, read_file]
 BUILT_IN_TOOLS = [ls, read_file, write_file, write_todos, think_tool]
 
 # Create research sub-agent
-SUB_AGENT_RESEARCHER = {
+SUB_AGENT_RESEARCHER: SubAgent = {
     "name": "research-agent",
     "description": "Delegate research to the sub-agent researcher. Only give this researcher one topic at a time.",
     "prompt": RESEARCHER_INSTRUCTIONS.format(date=get_today_str()),
@@ -76,7 +77,7 @@ SUB_AGENT_RESEARCHER = {
 }
 
 
-async def run_agent(user_input) -> None:
+async def run_agent(user_input: str) -> None:
     """Run the agent with the given user input.
 
     Args:

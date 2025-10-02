@@ -8,10 +8,11 @@ import base64
 import os
 import uuid
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 
 import httpx
 from langchain.chat_models import init_chat_model
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.messages import HumanMessage, ToolMessage
 from langchain_core.tools import InjectedToolArg, InjectedToolCallId, tool
 from langgraph.prebuilt import InjectedState
@@ -28,7 +29,7 @@ summarization_model = None
 tavily_client = None
 
 
-def get_summarization_model():
+def get_summarization_model() -> BaseLanguageModel:
     """Get or initialize the summarization model."""
     global summarization_model
     if summarization_model is None:
@@ -36,7 +37,7 @@ def get_summarization_model():
     return summarization_model
 
 
-def get_tavily_client():
+def get_tavily_client() -> TavilyClient:
     """Get or initialize the Tavily client."""
     global tavily_client
     if tavily_client is None:
@@ -61,7 +62,7 @@ def run_tavily_search(
     max_results: int = 1,
     topic: Literal["general", "news", "finance"] = "general",
     include_raw_content: bool = True,
-) -> dict:
+) -> dict[str, object]:
     """Perform search using Tavily API for a single query.
 
     Args:
@@ -76,7 +77,7 @@ def run_tavily_search(
     client = get_tavily_client()
     result = client.search(search_query, max_results=max_results, include_raw_content=include_raw_content, topic=topic)
 
-    return result
+    return cast(dict[str, object], result)
 
 
 def summarize_webpage_content(webpage_content: str) -> Summary:
@@ -98,7 +99,7 @@ def summarize_webpage_content(webpage_content: str) -> Summary:
             [HumanMessage(content=SUMMARIZE_WEB_SEARCH.format(webpage_content=webpage_content, date=get_today_str()))]
         )
 
-        return summary_and_filename
+        return cast(Summary, summary_and_filename)
 
     except Exception:
         # Return a basic summary object on failure

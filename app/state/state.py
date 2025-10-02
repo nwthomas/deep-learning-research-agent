@@ -6,7 +6,7 @@ This module defines the extended agent state structure that supports:
 - Efficient state merging with reducer functions
 """
 
-from typing import Annotated, Literal, NotRequired, TypedDict
+from typing import Annotated, Literal, TypedDict
 
 from langgraph.prebuilt.chat_agent_executor import AgentState
 
@@ -23,7 +23,7 @@ class Todo(TypedDict):
     status: Literal["pending", "in_progress", "completed"]
 
 
-def file_reducer(left, right):
+def file_reducer(left: dict[str, str] | None, right: dict[str, str] | None) -> dict[str, str] | None:
     """Merge two file dictionaries, with right side taking precedence.
 
     Used as a reducer function for the files field in agent state,
@@ -52,5 +52,5 @@ class DeepAgentState(AgentState):
     - files: Virtual file system stored as dict mapping filenames to content
     """
 
-    todos: NotRequired[list[Todo]]
-    files: Annotated[NotRequired[dict[str, str]], file_reducer]
+    todos: list[Todo]
+    files: Annotated[dict[str, str], file_reducer]

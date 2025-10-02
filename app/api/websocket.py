@@ -23,20 +23,20 @@ from .models import ResearchRequest
 class WebSocketManager:
     """Manages WebSocket connections and research streaming."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.active_connections: dict[str, WebSocket] = {}
 
-    async def connect(self, websocket: WebSocket, client_id: str):
+    async def connect(self, websocket: WebSocket, client_id: str) -> None:
         """Accept a WebSocket connection."""
         await websocket.accept()
         self.active_connections[client_id] = websocket
 
-    def disconnect(self, client_id: str):
+    def disconnect(self, client_id: str) -> None:
         """Remove a WebSocket connection."""
         if client_id in self.active_connections:
             del self.active_connections[client_id]
 
-    async def send_json(self, client_id: str, data: dict[str, Any]):
+    async def send_json(self, client_id: str, data: dict[str, Any]) -> None:
         """Send JSON data to a specific client."""
         if client_id in self.active_connections:
             try:
@@ -45,7 +45,7 @@ class WebSocketManager:
                 # Connection might be closed
                 self.disconnect(client_id)
 
-    async def handle_research_stream(self, websocket: WebSocket, client_id: str):
+    async def handle_research_stream(self, websocket: WebSocket, client_id: str) -> None:
         """Handle the research streaming WebSocket connection."""
         try:
             # Wait for research request

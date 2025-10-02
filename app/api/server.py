@@ -26,19 +26,19 @@ app.add_middleware(
 
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
     """Health check endpoint."""
     return {"message": "Deep Learning Research Agent API is running"}
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str]:
     """Health check endpoint."""
     return {"status": "healthy", "service": "deep-learning-research-agent"}
 
 
 @app.websocket("/ws/research")
-async def websocket_research_endpoint(websocket: WebSocket):
+async def websocket_research_endpoint(websocket: WebSocket) -> None:
     """
     WebSocket endpoint for real-time streaming research.
 

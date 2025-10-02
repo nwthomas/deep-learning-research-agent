@@ -7,7 +7,7 @@ import uvicorn
 from app import SERVER_HOST, SERVER_LOG_LEVEL, SERVER_PORT, SERVER_RELOAD
 
 
-async def main():
+async def main() -> None:
     uvicorn.run(
         "app.api.server:app", host=SERVER_HOST, port=SERVER_PORT, log_level=SERVER_LOG_LEVEL, reload=SERVER_RELOAD
     )
