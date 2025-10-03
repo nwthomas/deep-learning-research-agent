@@ -53,10 +53,11 @@ check: lint format-check typecheck
 fix: format lint
 	@echo "Code formatted and linted!"
 
-# Pre-commit hooks
+# Install pre-commit hooks
 install-hooks:
 	uv run pre-commit install
 
+# Run pre-commit hooks
 run-hooks:
 	uv run pre-commit run --all-files
 
