@@ -31,12 +31,12 @@ docker compose down
 # View logs
 make logs
 # or
-docker compose logs -f research-agent
+docker compose logs -f deep-learning-research-agent
 
 # Access container shell
 make shell
 # or
-docker compose exec research-agent /bin/bash
+docker compose exec deep-learning-research-agent /bin/bash
 
 # Rebuild after code changes
 docker compose up --build
@@ -51,7 +51,7 @@ docker compose up --build
 # 3. Rebuild: docker compose up --build
 
 # Install development dependencies locally
-make install-dev
+make sync-dev
 # or
 uv sync --extra dev
 ```
