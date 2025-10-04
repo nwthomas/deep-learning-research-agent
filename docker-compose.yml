@@ -4,10 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: >
-      uv run python main.py
     ports:
       - "8000:8000"
+    volumes:
+      - ./main.py:/app/main.py
+      - ./app:/app/app
     env_file:
       - .env
     environment:

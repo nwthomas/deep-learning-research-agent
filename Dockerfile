@@ -22,8 +22,8 @@ ENV PATH="/root/.local/bin:$PATH"
 # Copy dependency files
 COPY --chown=appuser:appuser pyproject.toml uv.lock ./
 
-# Install application dependencies
-RUN uv sync --frozen
+# Install application dependencies (including dev dependencies for watchdog)
+RUN uv sync --extra dev
 
 # Copy application code
 COPY --chown=appuser:appuser . .

@@ -1,16 +1,16 @@
 .PHONY: run dev stop logs shell rebuild sync sync-dev lint format format-check typecheck check fix install-hooks run-hooks clean
 
 
-# Start the server with logs (development mode)
-up:
-	docker compose up
-
 # Start the server in detached mode
-up-d:
+run:
 	docker compose up -d
 
+# Start the server with logs (development mode)
+dev:
+	docker compose up --build
+
 # Stop the server
-down:
+stop:
 	docker compose down
 
 # View logs
