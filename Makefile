@@ -1,22 +1,25 @@
-# Start the server in detached mode
-run:
-	docker compose up -d
+.PHONY: run dev stop logs shell rebuild sync sync-dev lint format format-check typecheck check fix install-hooks run-hooks clean
+
 
 # Start the server with logs (development mode)
-dev:
+up:
 	docker compose up
 
+# Start the server in detached mode
+up-d:
+	docker compose up -d
+
 # Stop the server
-stop:
+down:
 	docker compose down
 
 # View logs
 logs:
-	docker compose logs -f research-agent
+	docker compose logs -f app
 
 # Access container shell
 shell:
-	docker compose exec research-agent /bin/bash
+	docker compose exec app /bin/bash
 
 # Rebuild and start
 rebuild:
@@ -68,5 +71,3 @@ clean:
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
-
-.PHONY: run dev stop logs shell rebuild sync sync-dev lint format format-check typecheck check fix install-hooks run-hooks clean

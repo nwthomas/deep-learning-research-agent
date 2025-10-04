@@ -1,17 +1,37 @@
 """Deep Learning Research Agent FastAPI Server"""
 
-import asyncio
+import signal
+import sys
+from types import FrameType
+from typing import Any
 
 import uvicorn
 
-from app import SERVER_HOST, SERVER_LOG_LEVEL, SERVER_PORT, SERVER_RELOAD
+from app.config import app_config
 
 
-async def main() -> None:
+def signal_handler(signum: int, frame: FrameType | None) -> Any:
+    """Allow graceful shutdown of the application."""
+    print(f"\nReceived signal {signum}, shutting down gracefully...")
+    sys.exit(0)
+
+
+def run_server() -> None:
+    """Run the application server via uvicorn with proper signal handling."""
+
+    # Register signal handlers for graceful shutdown
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    # Run the application server
     uvicorn.run(
-        "app.api.server:app", host=SERVER_HOST, port=SERVER_PORT, log_level=SERVER_LOG_LEVEL, reload=SERVER_RELOAD
+        "app.server:app",
+        host=app_config.APP_HOST,
+        port=app_config.APP_PORT,
+        log_level=app_config.APP_LOG_LEVEL,
+        reload=app_config.APP_RELOAD,
     )
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run_server()

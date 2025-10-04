@@ -1,4 +1,7 @@
-"""Pydantic models for FastAPI request/response validation."""
+"""Pydantic models for FastAPI request/response validation.
+
+This module contains typed models for FastAPI request/response validation.
+"""
 
 from enum import Enum
 from typing import Any

@@ -2,16 +2,7 @@ from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt import create_react_agent
 
-from ..constants import (
-    RESEARCHER_MODEL_API_KEY,
-    RESEARCHER_MODEL_BASE_URL,
-    RESEARCHER_MODEL_NAME,
-    RESEARCHER_MODEL_PROVIDER,
-    SUPERVISOR_MODEL_API_KEY,
-    SUPERVISOR_MODEL_BASE_URL,
-    SUPERVISOR_MODEL_NAME,
-    SUPERVISOR_MODEL_PROVIDER,
-)
+from ..config import app_config
 from ..prompts import RESEARCHER_INSTRUCTIONS, SUPERVISOR_INSTRUCTIONS
 from ..state import DeepAgentState
 from ..tools import (
@@ -56,12 +47,18 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
 
 # Supervisor model used as main agent overseeing sub-agents
 SUPERVISOR_MODEL = build_chat_model(
-    SUPERVISOR_MODEL_API_KEY, SUPERVISOR_MODEL_BASE_URL, SUPERVISOR_MODEL_NAME, SUPERVISOR_MODEL_PROVIDER
+    app_config.SUPERVISOR_MODEL_API_KEY,
+    app_config.SUPERVISOR_MODEL_BASE_URL,
+    app_config.SUPERVISOR_MODEL_NAME,
+    app_config.SUPERVISOR_MODEL_PROVIDER,
 )
 
 # Researcher model used for conducting research
 RESEARCHER_MODEL = build_chat_model(
-    RESEARCHER_MODEL_API_KEY, RESEARCHER_MODEL_BASE_URL, RESEARCHER_MODEL_NAME, RESEARCHER_MODEL_PROVIDER
+    app_config.RESEARCHER_MODEL_API_KEY,
+    app_config.RESEARCHER_MODEL_BASE_URL,
+    app_config.RESEARCHER_MODEL_NAME,
+    app_config.RESEARCHER_MODEL_PROVIDER,
 )
 
 # Tools

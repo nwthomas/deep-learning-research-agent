@@ -6,7 +6,7 @@ templates used throughout the deep agents educational framework.
 
 from datetime import datetime
 
-from ..constants import MAX_CONCURRENT_RESEARCH_UNITS, MAX_RESEARCHER_ITERATIONS
+from ..config import app_config
 
 WRITE_TODOS_DESCRIPTION = """Create and manage structured task lists for tracking progress through complex workflows.
 
@@ -205,8 +205,8 @@ Your role is to coordinate research by delegating specific research tasks to sub
 
 # Build prompts
 RESEARCHER_SUB_AGENT_PROMPT = SUBAGENT_USAGE_INSTRUCTIONS.format(
-    max_concurrent_research_units=MAX_CONCURRENT_RESEARCH_UNITS,
-    max_researcher_iterations=MAX_RESEARCHER_ITERATIONS,
+    max_concurrent_research_units=app_config.MAX_CONCURRENT_RESEARCH_UNITS,
+    max_researcher_iterations=app_config.MAX_RESEARCHER_ITERATIONS,
     date=datetime.now().strftime("%a %b %-d, %Y"),
 )
 SUPERVISOR_INSTRUCTIONS = (

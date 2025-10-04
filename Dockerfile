@@ -1,4 +1,4 @@
-# Use Python 3.12 slim image
+# Use Python 3.12 slim image for smaller size
 FROM python:3.12-slim
 
 # Set working directory
@@ -22,7 +22,7 @@ ENV PATH="/root/.local/bin:$PATH"
 # Copy dependency files
 COPY --chown=appuser:appuser pyproject.toml uv.lock ./
 
-# Install dependencies
+# Install application dependencies
 RUN uv sync --frozen
 
 # Copy application code
