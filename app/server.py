@@ -15,9 +15,9 @@ from app.api import CustomError, manager
 from .config import app_config
 
 
-# Log and hook into the application lifecycle
+# Hook into the application lifecycle for logging and custom logic
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     # Run on startup
     print(f"Starting {app_config.APP_NAME}")
     yield
@@ -47,7 +47,7 @@ app.add_middleware(
 
 # Handle request validation errors
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+async def validation_exception_handler(_request: Request, exc: RequestValidationError) -> JSONResponse:
     """Handle Pydantic validation errors with a consistent format."""
     return JSONResponse(
         status_code=422,
@@ -91,9 +91,14 @@ async def global_exception_handler(_request: Request, _exc: Exception) -> JSONRe
 
 # Health check endpoint for various cloud providers check
 @app.get("/health")
-async def health_check() -> dict[str, str]:
+async def health_check() -> dict[str, str | dict[str, int]]:
     """Health check endpoint."""
-    return {"status": "healthy", "service": app_config.APP_NAME}
+    connection_stats = await manager.get_connection_stats()
+    return {
+        "status": "healthy",
+        "service": app_config.APP_NAME,
+        "connection_stats": connection_stats,
+    }
 
 
 # TODO: Add API endpoints and routers for the /ws application here. Move this into the endpoints file.
@@ -116,7 +121,10 @@ async def websocket_research_endpoint(websocket: WebSocket) -> None:
     - error: Error events (message)
     """
     client_id = str(uuid.uuid4())
-    await manager.connect(websocket, client_id)
+    connection_accepted = await manager.connect(websocket, client_id)
+
+    if not connection_accepted:
+        return  # Connection was rejected due to server overload
 
     try:
         await manager.handle_research_stream(websocket, client_id)
@@ -125,4 +133,4 @@ async def websocket_research_endpoint(websocket: WebSocket) -> None:
             client_id, {"event_type": "error", "data": {"message": f"Unexpected error: {str(e)}"}, "timestamp": None}
         )
     finally:
-        manager.disconnect(client_id)
+        await manager.disconnect(client_id)

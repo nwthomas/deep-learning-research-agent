@@ -1,5 +1,6 @@
 """WebSocket handler for streaming research results."""
 
+import asyncio
 import json
 from typing import Any
 
@@ -14,6 +15,7 @@ from ..agents.agents import (
     SUPERVISOR_MODEL,
 )
 from ..agents.utils import stream_agent_for_websocket
+from ..config import app_config
 from ..prompts import SUPERVISOR_INSTRUCTIONS
 from ..state import DeepAgentState
 from ..tools import _create_task_tool
@@ -25,16 +27,34 @@ class WebSocketManager:
 
     def __init__(self) -> None:
         self.active_connections: dict[str, WebSocket] = {}
+        self.max_connections = app_config.MAX_CONCURRENT_CONNECTIONS
+        self._lock = asyncio.Lock()
 
-    async def connect(self, websocket: WebSocket, client_id: str) -> None:
-        """Accept a WebSocket connection."""
-        await websocket.accept()
-        self.active_connections[client_id] = websocket
+    async def connect(self, websocket: WebSocket, client_id: str) -> bool:
+        """Accept a WebSocket connection. Returns True if successful, False if rejected."""
+        async with self._lock:
+            if len(self.active_connections) >= self.max_connections:
+                await websocket.close(code=1013, reason="Server overloaded - too many connections")
+                return False
 
-    def disconnect(self, client_id: str) -> None:
+            await websocket.accept()
+            self.active_connections[client_id] = websocket
+            return True
+
+    async def disconnect(self, client_id: str) -> None:
         """Remove a WebSocket connection."""
-        if client_id in self.active_connections:
-            del self.active_connections[client_id]
+        async with self._lock:
+            if client_id in self.active_connections:
+                del self.active_connections[client_id]
+
+    async def get_connection_stats(self) -> dict[str, int]:
+        """Get current connection statistics."""
+        async with self._lock:
+            return {
+                "active_connections": len(self.active_connections),
+                "max_connections": self.max_connections,
+                "available_connections": self.max_connections - len(self.active_connections),
+            }
 
     async def send_json(self, client_id: str, data: dict[str, Any]) -> None:
         """Send JSON data to a specific client."""
@@ -43,7 +63,7 @@ class WebSocketManager:
                 await self.active_connections[client_id].send_text(json.dumps(data))
             except Exception:
                 # Connection might be closed
-                self.disconnect(client_id)
+                await self.disconnect(client_id)
 
     async def handle_research_stream(self, websocket: WebSocket, client_id: str) -> None:
         """Handle the research streaming WebSocket connection."""
@@ -93,7 +113,7 @@ class WebSocketManager:
                 await self.send_json(client_id, event)
 
         except WebSocketDisconnect:
-            self.disconnect(client_id)
+            await self.disconnect(client_id)
         except json.JSONDecodeError:
             await self.send_json(
                 client_id, {"event_type": "error", "data": {"message": "Invalid JSON format"}, "timestamp": None}
@@ -104,7 +124,7 @@ class WebSocketManager:
                 {"event_type": "error", "data": {"message": f"Error processing request: {str(e)}"}, "timestamp": None},
             )
         finally:
-            self.disconnect(client_id)
+            await self.disconnect(client_id)
 
 
 manager = WebSocketManager()

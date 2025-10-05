@@ -1,22 +1,24 @@
 > NOTE: This repository is in draft state as I'm building. It may well be the foundation of my future startup, but I like learning in public so here it is.
 
-# 🧠🤖 Deep Learning Research Agent
+# Deep Learning Research Agent
 
 A multipurpose deep learning research agent 🔗
 
 ## Table of Contents
 
-1. [Project Management](#-project-management)
-2. [Setup](#setup)
+1. [Setup](#setup)
     - [Coding](#coding)
     - [Repository](#repository)
     - [IDE](#ide)
     - [Environment Variables](#environment-variables)
+2. [Issues, Bugs, and Project Management](#issues-bugs-and-project-management)
 3. [Acknowledgements](#️-acknowledgements)
 
-## 🧱 Project Management
+## Issues, Bugs, and Project Management
 
-Work for this repository is housed in this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
+🎯 To see upcoming work for this repository, see this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
+💬 If you want a feature, found a bug, or just want to contribute, read the [Contributing Guidelines](https://github.com/nwthomas/deep-learning-research-agent?tab=contributing-ov-file#contributing) and then open a new [GitHub issue](https://github.com/nwthomas/deep-learning-research-agent/issues/new).
+🔓 Found a security vulnerability? We greatly appreciate responsible and private disclosures. See [Security](https://github.com/nwthomas/deep-learning-research-agent?tab=security-ov-file) for next steps.
 
 ## Setup
 
@@ -124,6 +126,6 @@ SUPERVISOR_MODEL_PROVIDER=ollama
 
 Running `make dev` will automatically use your local `.env` file.
 
-## 🙇🏻‍♂️ Acknowledgements
+## Acknowledgements
 
 - The [LangChain](https://www.langchain.com) team for their exceptional documentation and [LangChain Academy courses](https://academy.langchain.com).

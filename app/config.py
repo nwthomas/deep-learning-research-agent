@@ -15,6 +15,8 @@ class AppConfig:
     APP_NAME: str
     APP_PORT: int
     APP_RELOAD: bool
+    # Limits on WebSocket connections
+    MAX_CONCURRENT_CONNECTIONS: int
     # Limits on resource usage
     MAX_CONCURRENT_RESEARCH_UNITS: int
     MAX_RESEARCHER_ITERATIONS: int
@@ -44,9 +46,11 @@ def build_app_config() -> AppConfig:
         APP_NAME=os.getenv("APP_NAME", "deep-learning-research-agent"),
         APP_PORT=int(os.getenv("APP_PORT", 8000)),
         APP_RELOAD=os.getenv("APP_RELOAD", "true").lower() == "true",
+        # Limits on WebSocket connections
+        MAX_CONCURRENT_CONNECTIONS=int(os.getenv("MAX_CONCURRENT_CONNECTIONS", 50)),
         # Limits on resource usage
-        MAX_CONCURRENT_RESEARCH_UNITS=os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 3),
-        MAX_RESEARCHER_ITERATIONS=os.getenv("MAX_RESEARCHER_ITERATIONS", 3),
+        MAX_CONCURRENT_RESEARCH_UNITS=int(os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 3)),
+        MAX_RESEARCHER_ITERATIONS=int(os.getenv("MAX_RESEARCHER_ITERATIONS", 3)),
         # Researcher model used for conducting research
         RESEARCHER_MODEL_API_KEY=os.getenv("RESEARCHER_MODEL_API_KEY", ""),
         RESEARCHER_MODEL_BASE_URL=os.getenv("RESEARCHER_MODEL_BASE_URL", ""),
