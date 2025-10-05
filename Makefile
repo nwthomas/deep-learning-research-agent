@@ -2,15 +2,15 @@
 
 
 # Start the server in detached mode
-run:
+up-d:
 	docker compose up -d
 
 # Start the server with logs (development mode)
-dev:
+up:
 	docker compose up --build
 
 # Stop the server
-stop:
+down:
 	docker compose down
 
 # View logs

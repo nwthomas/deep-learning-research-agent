@@ -7,17 +7,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Running the Server
 ```bash
 # Start the server (builds image automatically)
-make run
+make up-d
 # or
 docker compose up -d
 
 # Start server with logs (development mode)
-make dev
+make up
 # or
 docker compose up
 
 # Stop the server
-make stop
+make down
 # or
 docker compose down
 ```
