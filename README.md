@@ -18,6 +18,7 @@ A multipurpose deep learning research agent 🔗
 ## Project Structure
 
 ```bash
+├── .github/                 # Contains CODEOWNERS and GitHub action workflows
 ├── app/                     # Main application files
 │   ├── agents/              # Instantiation and routing within agents
 │   ├── api/                 # Main applications files for server
