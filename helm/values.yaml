@@ -7,7 +7,7 @@ image:
   repository: deep-learning-research-agent
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion
-  tag: ""
+  tag: "4c35e08"
 
 imagePullSecrets: []
 nameOverride: ""
