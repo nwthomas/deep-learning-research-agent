@@ -1,0 +1,152 @@
+# Default values for deep-learning-research-agent
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: deep-learning-research-agent
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # nginx.ingress.kubernetes.io/websocket-services: "deep-learning-research-agent"
+  hosts:
+    - host: research-agent.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: research-agent-tls
+  #    hosts:
+  #      - research-agent.local
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+# Application configuration
+app:
+  name: "deep-learning-research-agent"
+  host: "0.0.0.0"
+  port: 8000
+  reload: false
+  debug: false
+
+# Database configuration (if needed)
+database:
+  enabled: false
+  user: ""
+  password: ""
+  name: ""
+  host: ""
+  port: 5432
+
+# LangChain configuration
+langsmith:
+  apiKey: ""
+  tracing: true
+  project: "deep-learning-research-agent"
+
+# Tavily configuration for web search
+tavily:
+  apiKey: ""
+
+# Supervisor model configuration
+supervisorModel:
+  apiKey: ""
+  baseUrl: ""
+  name: ""
+  provider: ""
+
+# Research sub-agent configuration
+researcherModel:
+  apiKey: ""
+  baseUrl: ""
+  name: ""
+  provider: ""
+
+# Agent limits
+limits:
+  maxConcurrentResearchUnits: 3
+  maxResearcherIterations: 3
+
+# Extra environment variables
+extraEnv: []
+  # - name: CUSTOM_VAR
+  #   value: "custom_value"
+
+# Extra environment variables from secrets/configmaps
+extraEnvFrom: []
+  # - secretRef:
+  #     name: extra-secret
+  # - configMapRef:
+  #     name: extra-configmap

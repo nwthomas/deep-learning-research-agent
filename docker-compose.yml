@@ -7,13 +7,10 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./main.py:/app/main.py
       - ./app:/app/app
+      - ./main.py:/app/main.py
     env_file:
       - .env
-    environment:
-      - SERVER_HOST=0.0.0.0
-      - SERVER_PORT=8000
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

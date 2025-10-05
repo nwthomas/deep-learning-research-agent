@@ -12,6 +12,7 @@ from app.config import app_config
 
 def signal_handler(signum: int, frame: FrameType | None) -> Any:
     """Allow graceful shutdown of the application."""
+
     print(f"\nReceived signal {signum}, shutting down gracefully...")
     sys.exit(0)
 

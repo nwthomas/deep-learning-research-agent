@@ -1,4 +1,4 @@
-> NOTE: This repository is in draft state as I'm building. It may well be the foundation of my future startup, but I like learning in public so here it is.
+> NOTE: This repository is in draft state as I'm building. I like learning in public, so here it is.
 
 # Deep Learning Research Agent
 
@@ -6,25 +6,40 @@ A multipurpose deep learning research agent 🔗
 
 ## Table of Contents
 
-1. [Setup](#setup)
+1. [Project Structure](#project-structure)
+2. [Setup](#setup)
     - [Coding](#coding)
     - [Repository](#repository)
     - [IDE](#ide)
     - [Environment Variables](#environment-variables)
-2. [Issues, Bugs, and Project Management](#issues-bugs-and-project-management)
-3. [Acknowledgements](#️-acknowledgements)
+3. [Issues, Bugs, and Project Management](#issues-bugs-and-project-management)
+4. [Acknowledgements](#️-acknowledgements)
 
-## Issues, Bugs, and Project Management
+## Project Structure
 
-🎯 To see upcoming work for this repository, see this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
-💬 If you want a feature, found a bug, or just want to contribute, read the [Contributing Guidelines](https://github.com/nwthomas/deep-learning-research-agent?tab=contributing-ov-file#contributing) and then open a new [GitHub issue](https://github.com/nwthomas/deep-learning-research-agent/issues/new).
-🔓 Found a security vulnerability? We greatly appreciate responsible and private disclosures. See [Security](https://github.com/nwthomas/deep-learning-research-agent?tab=security-ov-file) for next steps.
+```bash
+├── app/                     # Main application files
+│   ├── agents/              # Instantiation and routing within agents
+│   ├── api/                 # Main applications files for server
+│   ├── prompts/             # Prompt templates for supervisor and sub-agents
+│   ├── state/               # Schemas surrounding state
+│   ├── tools/               # Root ArgoCD application deployment
+│   ├── config.py            # Application configuration for environment variables
+│   └── server.py            # Core server initialization
+├── helm/                    # Helm charts
+│   ├── templates/           #
+│   ├── Chart.yaml           #
+│   └── values.yaml          #
+├── migrations/              # Terraform configurations
+├── tests/                   # All testing files for server application
+└── main.py                  # Root file for running server application
+```
 
 ## Setup
 
 ### Coding
 
-It's recommended to use Claude Code for coding within this repository. There's already a `CLAUDE.md` file to govern how the model interacts with this codebase.
+Claude Code is the recommended choice for AI-assisted coding within this repository. There's already a `CLAUDE.md` file to govern how the model interacts with this codebase.
 
 For more on Claude Code, see the [Anthropic Documentation](https://www.claude.com/product/claude-code).
 
@@ -125,6 +140,12 @@ SUPERVISOR_MODEL_PROVIDER=ollama
 ```
 
 Running `make dev` will automatically use your local `.env` file.
+
+## Issues, Bugs, and Project Management
+
+🎯 To see upcoming work for this repository, see this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
+💬 If you want a feature, found a bug, or just want to contribute, read the [Contributing Guidelines](https://github.com/nwthomas/deep-learning-research-agent?tab=contributing-ov-file#contributing) and then open a new [GitHub issue](https://github.com/nwthomas/deep-learning-research-agent/issues/new).
+🔓 Found a security vulnerability? We greatly appreciate responsible and private disclosures. See [Security](https://github.com/nwthomas/deep-learning-research-agent?tab=security-ov-file) for next steps.
 
 ## Acknowledgements
 

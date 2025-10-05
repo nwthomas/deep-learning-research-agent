@@ -1,0 +1,20 @@
+apiVersion: v2
+name: deep-learning-research-agent
+description: A multi-agent deep learning research system built with LangChain and LangGraph
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - ai
+  - research
+  - langchain
+  - langgraph
+  - multi-agent
+home: https://github.com/nwthomas/deep-learning-research-agent
+sources:
+  - https://github.com/nwthomas/deep-learning-research-agent
+maintainers:
+  - name: Nathan Thomas
+    email: contact@nathanthomas.dev
+annotations:
+  category: AI/ML
