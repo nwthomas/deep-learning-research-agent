@@ -70,8 +70,8 @@ Next, use `pyenv` to install Python:
 
 ```bash
 # Install on MacOS, Linux, and Windows
-pyenv install 3.12.6
-pyenv global 3.12.6
+pyenv install 3.12.4
+pyenv global 3.12.4
 
 # Check install afterwards
 python --version
