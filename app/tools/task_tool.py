@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from typing import Annotated, NotRequired, TypedDict
 
 from langchain_core.language_models import BaseLanguageModel
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import HumanMessage, ToolMessage
 from langchain_core.tools import BaseTool, InjectedToolCallId, tool
 from langgraph.prebuilt import InjectedState, create_react_agent
 from langgraph.types import Command
@@ -50,8 +50,6 @@ def _create_task_tool(
     # Build tool name mapping for selective tool assignment
     tools_by_name = {}
     for tool_ in tools:
-        if not isinstance(tool_, BaseTool):
-            tool_ = tool(tool_)
         tools_by_name[tool_.name] = tool_
 
     # Create specialized sub-agents based on configurations
@@ -92,7 +90,7 @@ def _create_task_tool(
 
         # Create isolated context with only the task description
         # This is the key to context isolation - no parent history
-        state["messages"] = [{"role": "user", "content": description}]
+        state["messages"] = [HumanMessage(content=description)]
 
         # Execute the sub-agent in isolation
         result = sub_agent.invoke(state)

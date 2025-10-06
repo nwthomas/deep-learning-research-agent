@@ -31,18 +31,16 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
     Returns:
         A chat model
     """
-    # Build kwargs for init_chat_model, excluding empty values
-    kwargs = {"model": model_name, "temperature": 0.0}
+    if model_name == "":
+        raise ValueError("Model name cannot be empty")
 
-    if model_base_url != "":
-        kwargs["base_url"] = model_base_url
-    if model_api_key != "":
-        kwargs["api_key"] = model_api_key
-    if model_provider != "":
-        kwargs["model_provider"] = model_provider
-
-    model = init_chat_model(**kwargs)
-    return model
+    return init_chat_model(
+        model=model_name,
+        model_provider=model_provider if model_provider != "" else None,
+        base_url=model_base_url if model_base_url != "" else None,
+        api_key=model_api_key if model_api_key != "" else None,
+        temperature=0.0,
+    )
 
 
 # Supervisor model used as main agent overseeing sub-agents

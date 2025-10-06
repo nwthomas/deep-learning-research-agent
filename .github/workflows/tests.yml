@@ -1,4 +1,4 @@
-name: Tests, Linting, and Type Checks
+name: Tests
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
   PYTHON_VERSION: "3.12"
 
 jobs:
-  run-tests:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
