@@ -1,4 +1,4 @@
-.PHONY: run dev stop logs shell rebuild sync sync-dev lint format format-check typecheck check fix install-hooks run-hooks clean
+.PHONY: run dev stop logs shell rebuild sync sync-dev lint format format-check typecheck test check fix install-hooks run-hooks clean
 
 
 # Start the server in detached mode
@@ -49,8 +49,12 @@ format-check:
 typecheck:
 	uv run mypy .
 
+# Run tests
+test:
+	uv run pytest tests/ -v
+
 # Combined quality checks
-check: lint format-check typecheck
+check: lint format-check typecheck test
 	@echo "All quality checks passed!"
 
 fix: format lint

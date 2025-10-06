@@ -73,7 +73,12 @@ make typecheck
 # or
 uv run mypy .
 
-# Run all quality checks
+# Run tests
+make test
+# or
+uv run pytest tests/ -v
+
+# Run all quality checks (includes tests)
 make check
 
 # Format and lint (fix issues)
