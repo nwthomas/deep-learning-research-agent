@@ -1,3 +1,11 @@
+"""Module: errors.py
+
+Description:
+    Custom error classes used through the application.
+
+Author: Nathan Thomas
+"""
+
 from typing import Any
 
 from fastapi import HTTPException

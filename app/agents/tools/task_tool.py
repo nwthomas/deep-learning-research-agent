@@ -1,8 +1,11 @@
-"""Task delegation tools for context isolation through sub-agents.
+"""Module: task_tool.py
 
-This module provides the core infrastructure for creating and managing sub-agents
-with isolated contexts. Sub-agents prevent context clash by operating with clean
-context windows containing only their specific task description.
+Description:
+    This module provides the core infrastructure for creating and managing sub-agents
+    with isolated contexts. Sub-agents prevent context clash by operating with clean
+    context windows containing only their specific task description.
+
+Author: Nathan Thomas
 """
 
 from collections.abc import Sequence
@@ -44,6 +47,7 @@ def _create_task_tool(
     Returns:
         A 'task' tool that can delegate work to specialized sub-agents
     """
+
     # Create agent registry
     agents = {}
 
@@ -79,6 +83,7 @@ def _create_task_tool(
         This creates a fresh context for the sub-agent containing only the task description,
         preventing context pollution from the parent agent's conversation history.
         """
+
         # Validate requested agent type exists
         if subagent_type not in agents:
             return (

@@ -1,6 +1,9 @@
-"""Pydantic models for FastAPI request/response validation.
+"""Module: models.py
 
-This module contains typed models for FastAPI request/response validation.
+Description:
+    Pydantic models for FastAPI request/response validation.
+
+Author: Nathan Thomas
 """
 
 from enum import Enum

@@ -1,7 +1,10 @@
-"""Research Tools.
+"""Module: research_tools.py
 
-This module provides search and content processing utilities for the research agent,
-including web search capabilities and content summarization tools.
+Description:
+    This module provides search and content processing utilities for the research agent,
+    including web search capabilities and content summarization tools.
+
+Author: Nathan Thomas
 """
 
 import base64
@@ -30,7 +33,12 @@ tavily_client = None
 
 
 def get_summarization_model() -> BaseLanguageModel:
-    """Get or initialize the summarization model."""
+    """Get or initialize the summarization model.
+
+    Returns:
+        BaseLanguageModel: The summarization model
+    """
+
     global summarization_model
     if summarization_model is None:
         summarization_model = init_chat_model(model="anthropic:claude-3-5-sonnet-20241022")
@@ -38,7 +46,12 @@ def get_summarization_model() -> BaseLanguageModel:
 
 
 def get_tavily_client() -> TavilyClient:
-    """Get or initialize the Tavily client."""
+    """Get or initialize the Tavily client.
+
+    Returns:
+        TavilyClient: The Tavily client
+    """
+
     global tavily_client
     if tavily_client is None:
         tavily_client = TavilyClient()
@@ -66,14 +79,15 @@ def run_tavily_search(
     """Perform search using Tavily API for a single query.
 
     Args:
-        search_query: Search query to execute
-        max_results: Maximum number of results per query
-        topic: Topic filter for search results
-        include_raw_content: Whether to include raw webpage content
+        search_query (str): Search query to execute
+        max_results (int): Maximum number of results per query
+        topic (Literal["general", "news", "finance"]): Topic filter for search results
+        include_raw_content (bool): Whether to include raw webpage content
 
     Returns:
-        Search results dictionary
+        dict[str, object]: Search results dictionary
     """
+
     client = get_tavily_client()
     result = client.search(search_query, max_results=max_results, include_raw_content=include_raw_content, topic=topic)
 
@@ -84,11 +98,12 @@ def summarize_webpage_content(webpage_content: str) -> Summary:
     """Summarize webpage content using the configured summarization model.
 
     Args:
-        webpage_content: Raw webpage content to summarize
+        webpage_content (str): Raw webpage content to summarize
 
     Returns:
-        Summary object with filename and summary
+        Summary: Summary object with filename and summary
     """
+
     try:
         # Set up structured output model for summarization
         model = get_summarization_model()
@@ -113,11 +128,12 @@ def process_search_results(results: dict) -> list[dict]:
     """Process search results by summarizing content where available.
 
     Args:
-        results: Tavily search results dictionary
+        results (dict): Tavily search results dictionary
 
     Returns:
-        List of processed results with summaries
+        list[dict]: List of processed results with summaries
     """
+
     processed_results = []
 
     # Create a client for HTTP requests
@@ -173,15 +189,16 @@ def tavily_search(
     Returns only essential information to help the agent decide on next steps.
 
     Args:
-        query: Search query to execute
-        state: Injected agent state for file storage
-        tool_call_id: Injected tool call identifier
-        max_results: Maximum number of results to return (default: 1)
-        topic: Topic filter - 'general', 'news', or 'finance' (default: 'general')
+        query (str): Search query to execute
+        state (Annotated[DeepAgentState, InjectedState]): Injected agent state for file storage
+        tool_call_id (Annotated[str, InjectedToolCallId]): Injected tool call identifier
+        max_results (Annotated[int, InjectedToolArg]): Maximum number of results to return (default: 1)
+        topic (Annotated[Literal["general", "news", "finance"], InjectedToolArg]): Topic filter - 'general', 'news', or 'finance' (default: 'general')
 
     Returns:
-        Command that saves full results to files and provides minimal summary
+        Command: Command that saves full results to files and provides minimal summary
     """
+
     # Execute search
     search_results = run_tavily_search(
         query,
@@ -257,9 +274,10 @@ def think_tool(reflection: str) -> str:
     4. Strategic decision - Should I continue searching or provide my answer?
 
     Args:
-        reflection: Your detailed reflection on research progress, findings, gaps, and next steps
+        reflection (str): Your detailed reflection on research progress, findings, gaps, and next steps
 
     Returns:
-        Confirmation that reflection was recorded for decision-making
+        str: Confirmation that reflection was recorded for decision-making
     """
+
     return f"Reflection recorded: {reflection}"

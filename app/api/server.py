@@ -1,27 +1,42 @@
-"""FastAPI server for the deep learning research agent."""
+"""Module: server.py
+
+Description:
+    Main server file for the server application. It initializes a FastAPI app, adds middleware, and handles
+    various exceptions.
+
+Author: Nathan Thomas
+"""
 
 import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.websockets import WebSocket
 
-from app.api import CustomError, manager
+from ..shared.config import app_config
+from ..shared.errors import CustomError
+from .websocket import manager
 
-from .config import app_config
 
-
-# Hook into the application lifecycle for logging and custom logic
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
-    # Run on startup
+    """Hook into the application lifecycle for logging and custom logic. Run on startup and shutdown.
+
+    Args:
+        _app (FastAPI): The FastAPI app
+
+    Returns:
+        AsyncGenerator[None, None]: The lifespan generator
+    """
+
+    # Everything below this is run on startup
     print(f"Starting {app_config.APP_NAME}")
     yield
-    # Run on shutdown
+
+    # Everything below this is run on shutdown
     print(f"Shutting down {app_config.APP_NAME}")
 
 
@@ -29,13 +44,12 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 app = FastAPI(
     title="Deep Learning Research Agent API",
     description="API for conducting deep learning research with streaming capabilities",
-    version="0.1.0",
+    version=app_config.APP_VERSION,
     lifespan=lifespan,
     debug=app_config.APP_DEBUG,
 )
 
 # Add CORS middleware
-# TODO: Configure appropriately for production
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -45,10 +59,18 @@ app.add_middleware(
 )
 
 
-# Handle request validation errors
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(_request: Request, exc: RequestValidationError) -> JSONResponse:
-    """Handle Pydantic validation errors with a consistent format."""
+    """Handle Pydantic validation errors with a consistent format.
+
+    Args:
+        _request (Request): The request that caused the validation error
+        exc (RequestValidationError): The validation error
+
+    Returns:
+        JSONResponse: The JSON response with the validation error
+    """
+
     return JSONResponse(
         status_code=422,
         content={
@@ -64,17 +86,33 @@ async def validation_exception_handler(_request: Request, exc: RequestValidation
     )
 
 
-# Handle custom application errors
 @app.exception_handler(CustomError)
 async def custom_exception_handler(_request: Request, exc: CustomError) -> JSONResponse:
-    """Handle custom application errors."""
+    """Handle custom application errors.
+
+    Args:
+        _request (Request): The request that caused the custom error
+        exc (CustomError): The custom error
+
+    Returns:
+        JSONResponse: The JSON response with the custom error
+    """
+
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
-# Handle unexpected application errors
 @app.exception_handler(Exception)
 async def global_exception_handler(_request: Request, _exc: Exception) -> JSONResponse:
-    """Handle unexpected errors with consistent format."""
+    """Handle unexpected errors with consistent format.
+
+    Args:
+        _request (Request): The request that caused the error
+        _exc (Exception): The unexpected error
+
+    Returns:
+        JSONResponse: The JSON response with the unexpected error
+    """
+
     return JSONResponse(
         status_code=500,
         content={
@@ -89,23 +127,23 @@ async def global_exception_handler(_request: Request, _exc: Exception) -> JSONRe
     )
 
 
-# Health check endpoint for various cloud providers check
 @app.get("/health")
-async def health_check() -> dict[str, str | dict[str, int]]:
-    """Health check endpoint."""
-    connection_stats = await manager.get_connection_stats()
+async def health_check() -> dict[str, str]:
+    """Health check endpoint.
+
+    Returns:
+        dict[str, str]: The health check response
+    """
+
     return {
         "status": "healthy",
         "service": app_config.APP_NAME,
-        "connection_stats": connection_stats,
     }
 
 
-# TODO: Add API endpoints and routers for the /ws application here. Move this into the endpoints file.
 @app.websocket("/ws/research")
 async def websocket_research_endpoint(websocket: WebSocket) -> None:
-    """
-    WebSocket endpoint for real-time streaming research.
+    """WebSocket endpoint for real-time streaming research
 
     Protocol:
     1. Client connects to this endpoint
@@ -120,11 +158,14 @@ async def websocket_research_endpoint(websocket: WebSocket) -> None:
     - completed: Final completion event (final_result, total_messages)
     - error: Error events (message)
     """
+
     client_id = str(uuid.uuid4())
     connection_accepted = await manager.connect(websocket, client_id)
 
     if not connection_accepted:
-        return  # Connection was rejected due to server overload
+        # Connection was already closed by manager.connect() due to server overload
+        # No need to send additional messages or disconnect
+        return
 
     try:
         await manager.handle_research_stream(websocket, client_id)
@@ -132,5 +173,3 @@ async def websocket_research_endpoint(websocket: WebSocket) -> None:
         await manager.send_json(
             client_id, {"event_type": "error", "data": {"message": f"Unexpected error: {str(e)}"}, "timestamp": None}
         )
-    finally:
-        await manager.disconnect(client_id)

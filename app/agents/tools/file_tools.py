@@ -1,7 +1,10 @@
-"""Virtual file system tools for agent state management.
+"""Module: file_tools.py
 
-This module provides tools for managing a virtual filesystem stored in agent state,
-enabling context offloading and information persistence across agent interactions.
+Description:
+    This module provides tools for managing a virtual filesystem stored in agent state,
+    enabling context offloading and information persistence across agent interactions.
+
+Author: Nathan Thomas
 """
 
 from typing import Annotated
@@ -17,7 +20,15 @@ from ..state import DeepAgentState
 
 @tool(description=LS_DESCRIPTION)
 def ls(state: Annotated[DeepAgentState, InjectedState]) -> list[str]:
-    """List all files in the virtual filesystem."""
+    """List all files in the virtual filesystem.
+
+    Args:
+        state (Annotated[DeepAgentState, InjectedState]): Injected agent state containing the virtual filesystem
+
+    Returns:
+        list[str]: List of all files in the virtual filesystem
+    """
+
     return list(state.get("files", {}).keys())
 
 
@@ -31,14 +42,15 @@ def read_file(
     """Read file content from virtual filesystem with optional offset and limit.
 
     Args:
-        file_path: Path to the file to read
-        state: Agent state containing virtual filesystem (injected in tool node)
-        offset: Line number to start reading from (default: 0)
-        limit: Maximum number of lines to read (default: 2000)
+        file_path (str): Path to the file to read
+        state (Annotated[DeepAgentState, InjectedState]): Injected agent state containing the virtual filesystem
+        offset (int): Line number to start reading from (default: 0)
+        limit (int): Maximum number of lines to read (default: 2000)
 
     Returns:
-        Formatted file content with line numbers, or error message if file not found
+        str: Formatted file content with line numbers, or error message if file not found
     """
+
     files = state.get("files", {})
     if file_path not in files:
         return f"Error: File '{file_path}' not found"
@@ -72,14 +84,15 @@ def write_file(
     """Write content to a file in the virtual filesystem.
 
     Args:
-        file_path: Path where the file should be created/updated
-        content: Content to write to the file
-        state: Agent state containing virtual filesystem (injected in tool node)
-        tool_call_id: Tool call identifier for message response (injected in tool node)
+        file_path (str): Path where the file should be created/updated
+        content (str): Content to write to the file
+        state (Annotated[DeepAgentState, InjectedState]): Injected agent state containing the virtual filesystem
+        tool_call_id (Annotated[str, InjectedToolCallId]): Tool call identifier for message response
 
     Returns:
-        Command to update agent state with new file content
+        Command: Command to update agent state with new file content
     """
+
     files = state.get("files", {})
     files[file_path] = content
     return Command(

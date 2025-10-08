@@ -20,6 +20,8 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    # NOTE: Update this sentence if the automated PR body changes.
+    if: ${{ !contains(github.event.head_commit.message, 'This PR updates the Helm values.yaml file with the latest image tag.') }}
     permissions:
       contents: write
       packages: write
@@ -93,6 +95,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "feat: update image tag to ${{ steps.sha.outputs.short_sha }}"
           title: "Update image tag to ${{ steps.sha.outputs.short_sha }} for deployment"
+          # NOTE: Update the if condition for running this entire workflow if the automated PR body changes.
           body: |
             🤖 **Automated Image Tag Update**
 

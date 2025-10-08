@@ -1,12 +1,15 @@
-"""Prompt templates and tool descriptions for deep agents from scratch.
+"""Module: prompts.py
 
-This module contains all the system prompts, tool descriptions, and instruction
-templates used throughout the deep agents educational framework.
+Description:
+   This module contains all the system prompts, tool descriptions, and instruction
+   templates used throughout the deep agents educational framework.
+
+Author: Nathan Thomas
 """
 
 from datetime import datetime
 
-from ..config import app_config
+from ..shared.config import app_config
 
 WRITE_TODOS_DESCRIPTION = """Create and manage structured task lists for tracking progress through complex workflows.
 

@@ -2,8 +2,8 @@ apiVersion: v2
 name: deep-learning-research-agent
 description: A multi-agent deep learning research system built with LangChain and LangGraph
 type: application
-version: 0.1.0
-appVersion: "0.1.0"
+version: 0.0.0-alpha
+appVersion: "0.0.0-alpha"
 keywords:
   - ai
   - research

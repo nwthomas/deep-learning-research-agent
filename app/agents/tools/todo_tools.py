@@ -1,8 +1,11 @@
-"""TODO management tools for task planning and progress tracking.
+"""Module: todo_tools.py
 
-This module provides tools for creating and managing structured task lists
-that enable agents to plan complex workflows and track progress through
-multi-step operations.
+Description:
+    This module provides tools for creating and managing structured task lists
+    that enable agents to plan complex workflows and track progress through
+    multi-step operations.
+
+Author: Nathan Thomas
 """
 
 from typing import Annotated
@@ -21,12 +24,13 @@ def write_todos(todos: list[Todo], tool_call_id: Annotated[str, InjectedToolCall
     """Create or update the agent's TODO list for task planning and tracking.
 
     Args:
-        todos: List of Todo items with content and status
-        tool_call_id: Tool call identifier for message response
+        todos (list[Todo]): List of Todo items with content and status
+        tool_call_id (Annotated[str, InjectedToolCallId]): Tool call identifier for message response
 
     Returns:
-        Command to update agent state with new TODO list
+        Command: Command to update agent state with new TODO list
     """
+
     return Command(
         update={
             "todos": todos,
@@ -46,12 +50,13 @@ def read_todos(
     to stay focused on remaining tasks and track progress through complex workflows.
 
     Args:
-        state: Injected agent state containing the current TODO list
-        tool_call_id: Injected tool call identifier for message tracking
+        state (Annotated[DeepAgentState, InjectedState]): Injected agent state containing the current TODO list
+        tool_call_id (Annotated[str, InjectedToolCallId]): Injected tool call identifier for message tracking
 
     Returns:
-        Formatted string representation of the current TODO list
+        str: Formatted string representation of the current TODO list
     """
+
     todos = state.get("todos", [])
     if not todos:
         return "No todos currently in the list."

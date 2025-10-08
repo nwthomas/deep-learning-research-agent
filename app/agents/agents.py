@@ -1,11 +1,20 @@
+"""Module: agents.py
+
+Description:
+    Contains main agent functionality for the deep learning research agent. This research agent spawns
+    off sub-agents for a variety of research tasks.
+
+Author: Nathan Thomas
+"""
+
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt import create_react_agent
 
-from ..config import app_config
-from ..prompts import RESEARCHER_INSTRUCTIONS, SUPERVISOR_INSTRUCTIONS
-from ..state import DeepAgentState
-from ..tools import (
+from ..shared.config import app_config
+from .prompts import RESEARCHER_INSTRUCTIONS, SUPERVISOR_INSTRUCTIONS
+from .state import DeepAgentState
+from .tools import (
     _create_task_tool,
     get_today_str,
     ls,
@@ -15,7 +24,7 @@ from ..tools import (
     write_file,
     write_todos,
 )
-from ..tools.task_tool import SubAgent
+from .tools.task_tool import SubAgent
 from .utils import stream_agent
 
 
@@ -23,13 +32,13 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
     """Builds a chat model with the given parameters.
 
     Args:
-        model_api_key: The API key for the model
-        model_base_url: The base URL for the model
-        model_name: The name of the model
-        model_provider: The provider of the model
+        model_api_key (str): The API key for the model
+        model_base_url (str): The base URL for the model
+        model_name (str): The name of the model
+        model_provider (str): The provider of the model
 
     Returns:
-        A chat model
+        BaseChatModel: A chat model created based on given parameters
     """
     if model_name == "":
         raise ValueError("Model name cannot be empty")
@@ -51,7 +60,7 @@ SUPERVISOR_MODEL = build_chat_model(
     app_config.SUPERVISOR_MODEL_PROVIDER,
 )
 
-# Researcher model used for conducting research
+# Researcher model used for sub-agents conducting research
 RESEARCHER_MODEL = build_chat_model(
     app_config.RESEARCHER_MODEL_API_KEY,
     app_config.RESEARCHER_MODEL_BASE_URL,
@@ -60,7 +69,7 @@ RESEARCHER_MODEL = build_chat_model(
 )
 
 # Tools
-SUB_AGENT_TOOLS = [tavily_search, think_tool, read_file]
+SUB_AGENT_RESEARCHER_TOOLS = [tavily_search, think_tool, read_file]
 BUILT_IN_TOOLS = [ls, read_file, write_file, write_todos, think_tool]
 
 # Create research sub-agent
@@ -68,21 +77,22 @@ SUB_AGENT_RESEARCHER: SubAgent = {
     "name": "research-agent",
     "description": "Delegate research to the sub-agent researcher. Only give this researcher one topic at a time.",
     "prompt": RESEARCHER_INSTRUCTIONS.format(date=get_today_str()),
-    "tools": ["tavily_search", "think_tool", "read_file"],
+    "tools": [f.name for f in SUB_AGENT_RESEARCHER_TOOLS],
 }
 
 
 async def run_agent(user_input: str) -> None:
-    """Run the agent with the given user input.
+    """Run the agent with the given user input and streams back the results.
 
     Args:
         user_input (str): The user's input/query
     """
-    # Create task tool with the current model
-    current_task_tool = _create_task_tool(SUB_AGENT_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState)
-    # Update tools list with the current task tool
+
+    current_task_tool = _create_task_tool(
+        SUB_AGENT_RESEARCHER_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState
+    )
     current_delegation_tools = [current_task_tool]
-    current_all_tools = SUB_AGENT_TOOLS + BUILT_IN_TOOLS + current_delegation_tools
+    current_all_tools = SUB_AGENT_RESEARCHER_TOOLS + BUILT_IN_TOOLS + current_delegation_tools
     agent = create_react_agent(
         SUPERVISOR_MODEL, current_all_tools, prompt=SUPERVISOR_INSTRUCTIONS, state_schema=DeepAgentState
     )

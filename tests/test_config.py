@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from app.config import AppConfig, build_app_config
+from app.shared.config import AppConfig, build_app_config
 
 
 class TestAppConfig:
@@ -48,8 +48,8 @@ class TestBuildAppConfig:
             assert config.MAX_CONCURRENT_CONNECTIONS == 50
 
             # Resource limits defaults
-            assert config.MAX_CONCURRENT_RESEARCH_UNITS == 3
-            assert config.MAX_RESEARCHER_ITERATIONS == 3
+            assert config.MAX_CONCURRENT_RESEARCH_UNITS == 1
+            assert config.MAX_RESEARCHER_ITERATIONS == 1
 
             # Model settings defaults (empty strings)
             assert config.RESEARCHER_MODEL_API_KEY == ""

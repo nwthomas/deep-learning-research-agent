@@ -1,4 +1,11 @@
-"""Utility functions for displaying messages and prompts in Jupyter notebooks."""
+"""Module: utils.py
+
+Description:
+    Utility functions for displaying messages and prompts from agents. These range from formatting messages
+    to handling streaming agent actions, useful for sending messages via websocket.
+
+Author: Nathan Thomas
+"""
 
 import json
 from collections.abc import AsyncGenerator
@@ -13,7 +20,15 @@ console = Console()
 
 
 def format_message_content(message: Any) -> str:
-    """Convert message content to displayable string."""
+    """Convert message content to displayable string.
+
+    Args:
+        message (Any): The message to format
+
+    Returns:
+        str: The formatted message
+    """
+
     parts = []
     tool_calls_processed = False
 
@@ -44,7 +59,12 @@ def format_message_content(message: Any) -> str:
 
 
 def format_messages(messages: list[Any]) -> None:
-    """Format and display a list of messages with Rich formatting."""
+    """Format and display a list of messages with Rich formatting.
+
+    Args:
+        messages (list[Any]): The list of messages to format
+    """
+
     for m in messages:
         msg_type = m.__class__.__name__.replace("Message", "")
         content = format_message_content(m)
@@ -60,7 +80,12 @@ def format_messages(messages: list[Any]) -> None:
 
 
 def format_message(messages: list[Any]) -> None:
-    """Alias for format_messages for backward compatibility."""
+    """Alias for format_messages for backward compatibility.
+
+    Args:
+        messages (list[Any]): The list of messages to format
+    """
+
     return format_messages(messages)
 
 
@@ -68,10 +93,11 @@ def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "bl
     """Display a prompt with rich formatting and XML tag highlighting.
 
     Args:
-        prompt_text: The prompt string to display
-        title: Title for the panel (default: "Prompt")
-        border_style: Border color style (default: "blue")
+        prompt_text (str): The prompt string to display
+        title (str): Title for the panel (default: "Prompt")
+        border_style (str): Border color style (default: "blue")
     """
+
     # Create a formatted display of the prompt
     formatted_text = Text(prompt_text)
     formatted_text.highlight_regex(r"<[^>]+>", style="bold blue")  # Highlight XML tags
@@ -91,6 +117,14 @@ def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "bl
 
 # more expressive runner
 async def stream_agent(agent: Any, query: Any, config: Any = None) -> Any:
+    """Stream agent execution and yield results.
+
+    Args:
+        agent (Any): The agent to stream
+        query (Any): The query to stream
+        config (Any): The configuration to stream
+    """
+
     async for graph_name, stream_mode, event in agent.astream(
         query, stream_mode=["updates", "values"], subgraphs=True, config=config
     ):
@@ -115,7 +149,14 @@ async def stream_agent(agent: Any, query: Any, config: Any = None) -> Any:
 async def stream_agent_for_websocket(
     agent: Any, query: Any, config: Any = None
 ) -> AsyncGenerator[dict[str, Any], None]:
-    """Stream agent execution and yield WebSocket events."""
+    """Stream agent execution and yield WebSocket events.
+
+    Args:
+        agent (Any): The agent to stream
+        query (Any): The query to stream
+        config (Any): The configuration to stream
+    """
+
     try:
         async for graph_name, stream_mode, event in agent.astream(
             query, stream_mode=["updates", "values"], subgraphs=True, config=config
