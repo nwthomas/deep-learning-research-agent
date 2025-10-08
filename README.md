@@ -20,13 +20,9 @@ A multipurpose deep learning research agent 🔗
 ```bash
 ├── .github/                 # Contains CODEOWNERS and GitHub action workflows
 ├── app/                     # Main application files
-│   ├── agents/              # Instantiation and routing within agents
+│   ├── agents/              # Agent creation, tool use, and prompts
 │   ├── api/                 # Main applications files for server
-│   ├── prompts/             # Prompt templates for supervisor and sub-agents
-│   ├── state/               # Schemas surrounding state
-│   ├── tools/               # Root ArgoCD application deployment
-│   ├── config.py            # Application configuration for environment variables
-│   └── server.py            # Core server initialization
+│   └── shared/               # Shared code modules used throughout server
 ├── helm/                    # Helm charts
 │   ├── templates/           #
 │   ├── Chart.yaml           #
@@ -145,8 +141,10 @@ Running `make dev` will automatically use your local `.env` file.
 ## Issues, Bugs, and Project Management
 
 🎯 To see upcoming work for this repository, see this [Trello board](https://trello.com/b/Qm5Ltjec/deep-learning-agent).
+
 💬 If you want a feature, found a bug, or just want to contribute, read the [Contributing Guidelines](https://github.com/nwthomas/deep-learning-research-agent?tab=contributing-ov-file#contributing) and then open a new [GitHub issue](https://github.com/nwthomas/deep-learning-research-agent/issues/new).
-🔓 Found a security vulnerability? We greatly appreciate responsible and private disclosures. See [Security](https://github.com/nwthomas/deep-learning-research-agent?tab=security-ov-file) for next steps.
+
+🔓 Found a security vulnerability? Responsible and private disclosures are greatly appreciated. See [Security](https://github.com/nwthomas/deep-learning-research-agent?tab=security-ov-file) for next steps.
 
 ## Acknowledgements
 
