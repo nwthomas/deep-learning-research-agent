@@ -70,7 +70,7 @@ BUILT_IN_TOOLS = [ls, read_file, write_file, write_todos, think_tool]
 
 # Create research sub-agent
 SUB_AGENT_RESEARCHER: SubAgent = {
-    "name": "research-sub-agent",
+    "name": "research-agent",
     "description": "Delegate research to the sub-agent researcher. Only give this researcher one topic at a time.",
     "prompt": RESEARCHER_INSTRUCTIONS.format(date=get_today_str()),
     "tools": [f.name for f in SUB_AGENT_RESEARCHER_TOOLS],

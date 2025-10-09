@@ -12,7 +12,6 @@ from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import Any
 
-from langgraph.graph.state import CompiledStateGraph
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
@@ -138,7 +137,7 @@ async def stream_agent(agent: Any, query: Any, config: Any = None) -> Any:
 
 
 async def stream_agent_for_websocket(
-    agent: CompiledStateGraph, query: str, config: Any = None
+    agent: Any, query: Any, config: Any = None
 ) -> AsyncGenerator[dict[str, Any], None]:
     """Stream agent execution and yield WebSocket events.
 
