@@ -1,75 +1,57 @@
 .PHONY: run dev stop logs shell rebuild sync sync-dev lint format format-check typecheck test check fix install-hooks run-hooks clean
 
-
-# Start the server in detached mode
-up-d:
+up-d: # Start the server in detached mode
 	docker compose up -d
 
-# Start the server with logs (development mode)
-up:
+up: # Start the server with logs (development mode)
 	docker compose up --build
 
-# Stop the server
-down:
+down: # Stop the server
 	docker compose down
 
-# View logs
-logs:
+logs: # View logs
 	docker compose logs -f app
 
-# Access container shell
-shell:
+shell: # Access container shell
 	docker compose exec app /bin/bash
 
-# Rebuild and start
-rebuild:
+rebuild: # Rebuild and start
 	docker compose up --build
 
-# Sync dependencies
-sync:
+sync: # Sync dependencies
 	uv sync
 
-# Sync dependencies (for local development)
-sync-dev:
+sync-dev: # Sync dependencies (for local development)
 	uv sync --extra dev
 
-# Lint check the codebase
-lint:
+lint: # Lint check the codebase
 	uv run ruff check .
 
-# Format check the codebase
-format:
+format: # Format check the codebase
 	uv run ruff format .
 
-# Format check the codebase
-format-check:
+format-check: # Format check the codebase
 	uv run ruff format --check .
 
-# Type check the codebase
-typecheck:
+typecheck: # Type check the codebase
 	uv run mypy .
 
-# Run tests
-test:
+test: # Run tests
 	uv run pytest tests/ -v
 
-# Combined quality checks
-check: lint format-check typecheck test
+check: lint format-check typecheck test # Combined quality checks
 	@echo "All quality checks passed!"
 
-fix: format lint
+fix: format lint # Format and lint code
 	@echo "Code formatted and linted!"
 
-# Install pre-commit hooks
-install-hooks:
+install-hooks: # Install pre-commit hooks
 	uv run pre-commit install
 
-# Run pre-commit hooks
-run-hooks:
+run-hooks: # Run pre-commit hooks
 	uv run pre-commit run --all-files
 
-# Clean up
-clean:
+clean: # Clean up
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
