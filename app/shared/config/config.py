@@ -28,7 +28,7 @@ class AppConfig:
     APP_VERSION: str
 
     # Limits on WebSocket connections
-    MAX_CONCURRENT_CONNECTIONS: int
+    MAX_CONCURRENT_WEBSOCKET_CONNECTIONS: int
 
     # Limits on resource usage
     MAX_CONCURRENT_RESEARCH_UNITS: int
@@ -73,7 +73,7 @@ def build_app_config() -> AppConfig:
         APP_RELOAD=os.getenv("APP_RELOAD", "true").lower() == "true",
         APP_VERSION=os.getenv("APP_VERSION", ""),
         # Limits on WebSocket connections
-        MAX_CONCURRENT_CONNECTIONS=int(os.getenv("MAX_CONCURRENT_CONNECTIONS", 50)),
+        MAX_CONCURRENT_WEBSOCKET_CONNECTIONS=int(os.getenv("MAX_CONCURRENT_WEBSOCKET_CONNECTIONS", 100)),
         # Limits on resource usage
         MAX_CONCURRENT_RESEARCH_UNITS=int(os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 1)),
         MAX_RESEARCHER_ITERATIONS=int(os.getenv("MAX_RESEARCHER_ITERATIONS", 1)),

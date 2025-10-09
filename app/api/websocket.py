@@ -33,7 +33,7 @@ class WebSocketManager:
 
     def __init__(self) -> None:
         self.active_connections: dict[str, WebSocket] = {}
-        self.max_connections = app_config.MAX_CONCURRENT_CONNECTIONS
+        self.max_connections = app_config.MAX_CONCURRENT_WEBSOCKET_CONNECTIONS
         self._lock = asyncio.Lock()
 
     async def connect(self, websocket: WebSocket, client_id: str) -> bool:

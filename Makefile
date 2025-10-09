@@ -10,10 +10,10 @@ down: # Stop the server
 	docker compose down
 
 logs: # View logs
-	docker compose logs -f app
+	docker compose logs -f deep-learning-research-agent
 
 shell: # Access container shell
-	docker compose exec app /bin/bash
+	docker compose exec deep-learning-research-agent /bin/bash
 
 rebuild: # Rebuild and start
 	docker compose up --build
