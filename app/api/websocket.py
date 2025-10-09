@@ -29,7 +29,7 @@ from .models import ResearchRequest
 
 
 class WebSocketManager:
-    """Manages WebSocket connections and research streaming."""
+    """Wraps the native Websocket connection and offers up an API for managing these connections and streams."""
 
     def __init__(self) -> None:
         self.active_connections: dict[str, WebSocket] = {}
@@ -37,7 +37,16 @@ class WebSocketManager:
         self._lock = asyncio.Lock()
 
     async def connect(self, websocket: WebSocket, client_id: str) -> bool:
-        """Accept a WebSocket connection. Returns True if successful, False if rejected."""
+        """Accept a WebSocket connection. Returns True if successful, False if rejected.
+
+        Args:
+            websocket (WebSocket): The websocket connection
+            client_id (str): The client ID
+
+        Returns:
+            bool: True if successful, False if rejected
+        """
+
         async with self._lock:
             if len(self.active_connections) >= self.max_connections:
                 await websocket.close(code=1013, reason="Server overloaded - too many connections")
@@ -45,34 +54,52 @@ class WebSocketManager:
 
             await websocket.accept()
             self.active_connections[client_id] = websocket
+
             return True
 
     async def disconnect(self, client_id: str) -> None:
-        """Remove a WebSocket connection."""
+        """Remove a WebSocket connection.
+
+        Args:
+            client_id (str): The client ID
+        """
+
         async with self._lock:
             if client_id in self.active_connections:
-                del self.active_connections[client_id]
+                websocket = self.active_connections[client_id]
 
-    async def get_connection_stats(self) -> dict[str, int]:
-        """Get current connection statistics."""
-        async with self._lock:
-            return {
-                "active_connections": len(self.active_connections),
-                "max_connections": self.max_connections,
-                "available_connections": self.max_connections - len(self.active_connections),
-            }
+                try:
+                    await websocket.close()
+                except Exception:
+                    # Connection might already be closed. Simply pass on and remove from the active conneciton list.
+                    pass
+                finally:
+                    del self.active_connections[client_id]
 
     async def send_json(self, client_id: str, data: dict[str, Any]) -> None:
-        """Send JSON data to a specific client."""
+        """Send JSON data to a specific client.
+
+        Args:
+            client_id (str): The client ID
+            data (dict[str, Any]): The data to send
+        """
+
         if client_id in self.active_connections:
             try:
                 await self.active_connections[client_id].send_text(json.dumps(data))
             except Exception:
                 # Connection might be closed
                 await self.disconnect(client_id)
+        # TODO: Add logging for not found client_id here
 
-    async def handle_research_stream(self, websocket: WebSocket, client_id: str) -> None:
-        """Handle the research streaming WebSocket connection."""
+    async def handle_websocket_stream(self, websocket: WebSocket, client_id: str) -> None:
+        """Handle the research streaming WebSocket connection.
+
+        Args:
+            websocket (WebSocket): The websocket connection
+            client_id (str): The client ID
+        """
+
         try:
             # Wait for research request
             data = await websocket.receive_text()

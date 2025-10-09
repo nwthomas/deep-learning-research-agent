@@ -141,35 +141,24 @@ async def health_check() -> dict[str, str]:
     }
 
 
-@app.websocket("/ws/research")
-async def websocket_research_endpoint(websocket: WebSocket) -> None:
+@app.websocket("/ws")
+async def handle_websocket_stream(websocket: WebSocket) -> None:
     """WebSocket endpoint for real-time streaming research
 
-    Protocol:
-    1. Client connects to this endpoint
-    2. Client sends a JSON message with the research query: {"query": "your question"}
-    3. Server streams back real-time updates as JSON events
-    4. Connection closes when research is complete or on error
-
-    Event types:
-    - status_update: Progress updates (graph, node, status)
-    - tool_call: When the agent calls a tool (tool_name, args, tool_id)
-    - result_chunk: Streaming content chunks (content, message_type)
-    - completed: Final completion event (final_result, total_messages)
-    - error: Error events (message)
+    Args:
+        websocket (WebSocket): The websocket connection
     """
 
+    # TODO: This could be upgraded for a production environment to track clients by a real unique ID
+    # persisted across sessions. However, this is fine for this server's purposes right now.
     client_id = str(uuid.uuid4())
     connection_accepted = await manager.connect(websocket, client_id)
 
+    # Connection was already closed by manager.connect() due to server overload. Simply return as there's
+    # no need to send additional messages or disconnect.
     if not connection_accepted:
-        # Connection was already closed by manager.connect() due to server overload
-        # No need to send additional messages or disconnect
         return
 
-    try:
-        await manager.handle_research_stream(websocket, client_id)
-    except Exception as e:
-        await manager.send_json(
-            client_id, {"event_type": "error", "data": {"message": f"Unexpected error: {str(e)}"}, "timestamp": None}
-        )
+    # Handle any further messages in the websocket stream through the established connection. This also
+    # handles errors with disconnection, so no need for try/except here.
+    await manager.handle_websocket_stream(websocket, client_id)

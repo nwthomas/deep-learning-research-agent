@@ -24,7 +24,7 @@ docker compose down
 
 **Server Endpoints:**
 - Health check: `GET http://localhost:8000/health`
-- WebSocket research: `ws://localhost:8000/ws/research`
+- WebSocket: `ws://localhost:8000/ws`
 
 ### Development Workflow
 ```bash
@@ -160,7 +160,7 @@ This is a multi-agent deep learning research system built with LangChain and Lan
 
 ### Research Workflow
 
-1. **WebSocket Connection**: Client connects to `/ws/research` endpoint
+1. **WebSocket Connection**: Client connects to `/ws` endpoint
 2. **Query Processing**: User sends research query via WebSocket
 3. **Task Planning**: Supervisor creates TODO list based on user query
 4. **Research Delegation**: Tasks delegated to specialized research sub-agents

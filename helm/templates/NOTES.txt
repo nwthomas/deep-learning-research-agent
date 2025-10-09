@@ -25,7 +25,7 @@
    The application provides a health check endpoint at /health
 
 3. WebSocket Research Endpoint:
-   Connect to WebSocket at ws://your-app-url/ws/research for real-time research interactions
+   Connect to WebSocket at ws://your-app-url/ws for real-time research interactions
 
 4. Configuration:
    - All API keys and sensitive data are stored in the secret: {{ include "deep-learning-research-agent.secretName" . }}

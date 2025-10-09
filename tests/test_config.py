@@ -45,7 +45,7 @@ class TestBuildAppConfig:
             assert config.APP_RELOAD is True
 
             # Connection limits defaults
-            assert config.MAX_CONCURRENT_CONNECTIONS == 50
+            assert config.MAX_CONCURRENT_WEBSOCKET_CONNECTIONS == 100
 
             # Resource limits defaults
             assert config.MAX_CONCURRENT_RESEARCH_UNITS == 1
@@ -70,7 +70,7 @@ class TestBuildAppConfig:
             "APP_NAME": "custom-app",
             "APP_PORT": "9999",
             "APP_RELOAD": "false",
-            "MAX_CONCURRENT_CONNECTIONS": "100",
+            "MAX_CONCURRENT_WEBSOCKET_CONNECTIONS": "100",
             "MAX_CONCURRENT_RESEARCH_UNITS": "5",
             "MAX_RESEARCHER_ITERATIONS": "10",
             "RESEARCHER_MODEL_API_KEY": "researcher-key",
@@ -95,7 +95,7 @@ class TestBuildAppConfig:
             assert config.APP_RELOAD is False
 
             # Connection limits
-            assert config.MAX_CONCURRENT_CONNECTIONS == 100
+            assert config.MAX_CONCURRENT_WEBSOCKET_CONNECTIONS == 100
 
             # Resource limits
             assert config.MAX_CONCURRENT_RESEARCH_UNITS == 5
@@ -161,7 +161,7 @@ class TestBuildAppConfig:
             "APP_NAME",
             "APP_PORT",
             "APP_RELOAD",
-            "MAX_CONCURRENT_CONNECTIONS",
+            "MAX_CONCURRENT_WEBSOCKET_CONNECTIONS",
             "MAX_CONCURRENT_RESEARCH_UNITS",
             "MAX_RESEARCHER_ITERATIONS",
             "RESEARCHER_MODEL_API_KEY",
