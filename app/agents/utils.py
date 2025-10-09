@@ -12,6 +12,7 @@ from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import Any
 
+from langgraph.graph.state import CompiledStateGraph
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
@@ -79,16 +80,6 @@ def format_messages(messages: list[Any]) -> None:
             console.print(Panel(content, title=f"📝 {msg_type}", border_style="white"))
 
 
-def format_message(messages: list[Any]) -> None:
-    """Alias for format_messages for backward compatibility.
-
-    Args:
-        messages (list[Any]): The list of messages to format
-    """
-
-    return format_messages(messages)
-
-
 def show_prompt(prompt_text: str, title: str = "Prompt", border_style: str = "blue") -> None:
     """Display a prompt with rich formatting and XML tag highlighting.
 
@@ -147,7 +138,7 @@ async def stream_agent(agent: Any, query: Any, config: Any = None) -> Any:
 
 
 async def stream_agent_for_websocket(
-    agent: Any, query: Any, config: Any = None
+    agent: CompiledStateGraph, query: str, config: Any = None
 ) -> AsyncGenerator[dict[str, Any], None]:
     """Stream agent execution and yield WebSocket events.
 

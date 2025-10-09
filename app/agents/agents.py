@@ -9,13 +9,10 @@ Author: Nathan Thomas
 
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
-from langgraph.prebuilt import create_react_agent
 
 from ..shared.config import app_config
-from .prompts import RESEARCHER_INSTRUCTIONS, SUPERVISOR_INSTRUCTIONS
-from .state import DeepAgentState
+from .prompts import RESEARCHER_INSTRUCTIONS
 from .tools import (
-    _create_task_tool,
     get_today_str,
     ls,
     read_file,
@@ -25,7 +22,6 @@ from .tools import (
     write_todos,
 )
 from .tools.task_tool import SubAgent
-from .utils import stream_agent
 
 
 def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, model_provider: str) -> BaseChatModel:
@@ -74,34 +70,8 @@ BUILT_IN_TOOLS = [ls, read_file, write_file, write_todos, think_tool]
 
 # Create research sub-agent
 SUB_AGENT_RESEARCHER: SubAgent = {
-    "name": "research-agent",
+    "name": "research-sub-agent",
     "description": "Delegate research to the sub-agent researcher. Only give this researcher one topic at a time.",
     "prompt": RESEARCHER_INSTRUCTIONS.format(date=get_today_str()),
     "tools": [f.name for f in SUB_AGENT_RESEARCHER_TOOLS],
 }
-
-
-async def run_agent(user_input: str) -> None:
-    """Run the agent with the given user input and streams back the results.
-
-    Args:
-        user_input (str): The user's input/query
-    """
-
-    current_task_tool = _create_task_tool(
-        SUB_AGENT_RESEARCHER_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState
-    )
-    current_delegation_tools = [current_task_tool]
-    current_all_tools = SUB_AGENT_RESEARCHER_TOOLS + BUILT_IN_TOOLS + current_delegation_tools
-    agent = create_react_agent(
-        SUPERVISOR_MODEL, current_all_tools, prompt=SUPERVISOR_INSTRUCTIONS, state_schema=DeepAgentState
-    )
-    query = {
-        "messages": [
-            {
-                "role": "user",
-                "content": user_input,
-            }
-        ],
-    }
-    await stream_agent(agent, query)
