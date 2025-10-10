@@ -16,13 +16,13 @@ from langgraph.prebuilt import create_react_agent
 
 from ..agents import (
     BUILT_IN_TOOLS,
-    RESEARCHER_MODEL,
     SUB_AGENT_RESEARCHER,
     SUB_AGENT_RESEARCHER_TOOLS,
     SUPERVISOR_INSTRUCTIONS,
-    SUPERVISOR_MODEL,
     DeepAgentState,
     _create_task_tool,
+    get_researcher_model,
+    get_supervisor_model,
     stream_agent_for_websocket,
 )
 from ..shared.config import app_config
@@ -134,12 +134,15 @@ class WebSocketManager:
 
                 # TODO: This can be refactored later to its own helper functions surrounding agents
                 current_task_tool = _create_task_tool(
-                    SUB_AGENT_RESEARCHER_TOOLS, [SUB_AGENT_RESEARCHER], RESEARCHER_MODEL, DeepAgentState
+                    SUB_AGENT_RESEARCHER_TOOLS, [SUB_AGENT_RESEARCHER], get_researcher_model(), DeepAgentState
                 )
                 current_delegation_tools = [current_task_tool]
                 current_all_tools = SUB_AGENT_RESEARCHER_TOOLS + BUILT_IN_TOOLS + current_delegation_tools
                 supervisor_agent = create_react_agent(
-                    SUPERVISOR_MODEL, current_all_tools, prompt=SUPERVISOR_INSTRUCTIONS, state_schema=DeepAgentState
+                    get_supervisor_model(),
+                    current_all_tools,
+                    prompt=SUPERVISOR_INSTRUCTIONS,
+                    state_schema=DeepAgentState,
                 )
 
                 query = {

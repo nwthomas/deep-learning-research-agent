@@ -48,21 +48,38 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
     )
 
 
-# Supervisor model used as main agent overseeing sub-agents
-SUPERVISOR_MODEL = build_chat_model(
-    app_config.SUPERVISOR_MODEL_API_KEY,
-    app_config.SUPERVISOR_MODEL_BASE_URL,
-    app_config.SUPERVISOR_MODEL_NAME,
-    app_config.SUPERVISOR_MODEL_PROVIDER,
-)
+# Model instances - initialized lazily when first accessed
+_supervisor_model: BaseChatModel | None = None
+_researcher_model: BaseChatModel | None = None
 
-# Researcher model used for sub-agents conducting research
-RESEARCHER_MODEL = build_chat_model(
-    app_config.RESEARCHER_MODEL_API_KEY,
-    app_config.RESEARCHER_MODEL_BASE_URL,
-    app_config.RESEARCHER_MODEL_NAME,
-    app_config.RESEARCHER_MODEL_PROVIDER,
-)
+
+def get_supervisor_model() -> BaseChatModel:
+    """Get the supervisor model, initializing it if necessary."""
+
+    global _supervisor_model
+    if _supervisor_model is None:
+        _supervisor_model = build_chat_model(
+            app_config.SUPERVISOR_MODEL_API_KEY,
+            app_config.SUPERVISOR_MODEL_BASE_URL,
+            app_config.SUPERVISOR_MODEL_NAME,
+            app_config.SUPERVISOR_MODEL_PROVIDER,
+        )
+    return _supervisor_model
+
+
+def get_researcher_model() -> BaseChatModel:
+    """Get the researcher model, initializing it if necessary."""
+
+    global _researcher_model
+    if _researcher_model is None:
+        _researcher_model = build_chat_model(
+            app_config.RESEARCHER_MODEL_API_KEY,
+            app_config.RESEARCHER_MODEL_BASE_URL,
+            app_config.RESEARCHER_MODEL_NAME,
+            app_config.RESEARCHER_MODEL_PROVIDER,
+        )
+    return _researcher_model
+
 
 # Tools
 SUB_AGENT_RESEARCHER_TOOLS = [tavily_search, think_tool, read_file]
