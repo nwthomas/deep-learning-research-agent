@@ -2,16 +2,16 @@
 
 A multipurpose deep learning research agent 🔗
 
-This repository is slightly rough around the edges as I built it as a prototype for a production implementation of a deep learning agent. I keep this repository public as it may prove useful as a jumping off point on your own journey with agentic implementations.
+This repository started as a combination of learning process and prototyping. It will remain public as proof of work and for others to use in their own journey if they want.
 
 ## Table of Contents
 
 1. [Project Structure](#project-structure)
 2. [Setup](#setup)
-    - [Coding](#coding)
     - [Repository](#repository)
-    - [IDE](#ide)
     - [Environment Variables](#environment-variables)
+    - [IDE](#ide)
+    - [Coding](#coding)
 3. [Issues, Bugs, and Project Management](#issues-bugs-and-project-management)
 4. [Acknowledgements](#️-acknowledgements)
 
@@ -34,22 +34,16 @@ This repository is slightly rough around the edges as I built it as a prototype 
 
 ## Setup
 
-### Coding
-
-Claude Code is the recommended choice for AI-assisted coding within this repository. There's already a `CLAUDE.md` file to govern how the model interacts with this codebase.
-
-For more on Claude Code, see the [Anthropic Documentation](https://www.claude.com/product/claude-code).
-
 ### Repository
 
-You'll need the following setup for running this codebase correctly:
+The following setup is needed for running this codebase correctly:
 
 1. [Python](https://www.python.org) (through [Pyenv](https://github.com/pyenv/pyenv))
 2. [Docker](https://www.docker.com)
 
-First, ensure you have the proper Python version locally. See the [.python-version](./.python-version) file for the recommended versioning.
+First, ensure the proper Python version is installed locally. See the [.python-version](./.python-version) file for the recommended versioning.
 
-You'll want to install `pyenv` first to manage non-system level Python installations. You can do that with:
+Install `pyenv` first to manage non-system level Python installations. This can be done with:
 
 ```bash
 # Install on MacOS
@@ -83,22 +77,53 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-After setting up Python and uv, you can run the following commands to fully configure dependencies and git hooks for this codebase:
+After setting up Python and uv, run the following commands to fully configure local dev dependencies and git hooks for this codebase:
 
 ```base
 make sync-dev
 make install-hooks
 ```
 
-Finally, you will need to install Docker in order to run this codebase locally. The easiest way to do this is to just install and setup Docker Desktop. To do that, use one of the following links:
+Finally, Docker will need to be installed to run this codebase locally. The easiest way to do this is to just install and setup Docker Desktop. To do that, use one of the following links:
 
 1. [Docker Desktop MacOS](https://docs.docker.com/desktop/setup/install/mac-install)
 2. [Docker Desktop Linux](https://docs.docker.com/desktop/setup/install/linux)
 3. [Docker Desktop Windows](https://docs.docker.com/desktop/setup/install/windows-install)
 
+### Environment Variables
+
+Create a new `.env` file in the root of the repository and set the required environment variables (using the [.env.example](https://github.com/nwthomas/deep-learning-research-agent/blob/main/.env.example) file as reference).
+
+This repository supports both cloud-based models as well as those run locally (such as with [Ollama](https://ollama.com) or [vLLM](https://docs.vllm.ai)).
+
+Note that setting an Anthropic/OpenAI key and model name does not require a base URL or provider name as those are automatically set by the underlying dependencies. However, locally run models will require all these environment variables to be filled out.
+
+Here are two examples of configurations for cloud-based models and local, respectively. Each agent in the environment variable list can be customized individually:
+
+```bash
+# Leave the SUPERVISOR_MODEL_BASE_URL and SUPERVISOR_MODEL_PROVIDER blank for Anthropic usage as those are set
+# automatically by LangChain.
+SUPERVISOR_MODEL_API_KEY=api_key_here
+SUPERVISOR_MODEL_BASE_URL=
+SUPERVISOR_MODEL_NAME=claude-sonnet-4-5-20250929
+SUPERVISOR_MODEL_PROVIDER=
+
+# Setup for a locally-run LLM. The SUPERVISOR_MODEL_API_KEY likely won't matter here (unless it's set on the
+# process serving the model) and is just required by LangChain's package. For a list of all possible providers that
+# LangChain allows, see: https://python.langchain.com/api_reference/langchain/chat_models/langchain.chat_models.base.init_chat_model.html
+SUPERVISOR_MODEL_API_KEY=ollama
+SUPERVISOR_MODEL_BASE_URL=http://localhost:11434
+SUPERVISOR_MODEL_NAME=gpt-oss:20b
+SUPERVISOR_MODEL_PROVIDER=ollama
+```
+
+At time of this writing, [gpt-oss:20b](https://huggingface.co/openai/gpt-oss-20b) is an open source model that performs well with tool calls, thinking, and overall tasks for this repository's agent.
+
+After all the above environment variable configurations, running `make dev` will automatically use the local `.env` file and start up the server in Docker.
+
 ### IDE
 
-You can setup formatting for the codebase (particularly on save). It's recommended to add the following to your IDE's `settings.json (in Cursor or VS Code, although you may be able to figure out an analogous setup in another IDE of your choice):
+Formatting for the codebase can run on save. It's recommended to add the following IDE `settings.json` setup (in Cursor or VS Code, although it may be possible to figure out an analogous setup in another IDE):
 
 ```json
 "[python]": {
@@ -111,34 +136,11 @@ You can setup formatting for the codebase (particularly on save). It's recommend
 }
 ```
 
-### Environment Variables
+### Coding
 
-Create a new `.env` file in the root of your local repository and set the required environment variables.
+Claude Code is the recommended choice for AI-assisted coding within this repository. There's already a `CLAUDE.md` file to govern how the model interacts with this codebase.
 
-This repository supports both cloud-based models as well as ones you might choose to run locally (such as with [Ollama](https://ollama.com) or [vLLM](https://docs.vllm.ai)).
-
-Here are two examples of configurations for cloud-based models and local, respectively. You'll need to change these for each agent in the environment variable list (and can actually customize them individually):
-
-```bash
-# Leave the SUPERVISOR_MODEL_BASE_URL and SUPERVISOR_MODEL_PROVIDER blank for Anthropic usage as those are set
-# automatically by LangChain.
-SUPERVISOR_MODEL_API_KEY=your_api_key_here
-SUPERVISOR_MODEL_BASE_URL=
-SUPERVISOR_MODEL_NAME=claude-sonnet-4-5-20250929
-SUPERVISOR_MODEL_PROVIDER=
-
-# Setup for a locally-run LLM. The SUPERVISOR_MODEL_API_KEY likely won't matter here (unless you have one set on the
-# process serving your model) and is just required by LangChain's package. For a list of all possible providers that
-# LangChain allows, see: https://python.langchain.com/api_reference/langchain/chat_models/langchain.chat_models.base.init_chat_model.html
-SUPERVISOR_MODEL_API_KEY=ollama
-SUPERVISOR_MODEL_BASE_URL=http://localhost:11434
-SUPERVISOR_MODEL_NAME=gpt-oss:20b
-SUPERVISOR_MODEL_PROVIDER=ollama
-```
-
-Note that setting an Anthropic/OpenAI key and model name does not require a base URL or provider name as those are automatically set by the underlying dependencies. However, locally run models will require all these environment variables to be filled out.
-
-Running `make dev` will automatically use your local `.env` file and start up the server in Docker.
+For more on Claude Code, see the [Anthropic Documentation](https://www.claude.com/product/claude-code).
 
 ## Issues, Bugs, and Project Management
 

@@ -36,6 +36,7 @@ def build_chat_model(model_api_key: str, model_base_url: str, model_name: str, m
     Returns:
         BaseChatModel: A chat model created based on given parameters
     """
+
     if model_name == "":
         raise ValueError("Model name cannot be empty")
 
@@ -54,7 +55,11 @@ _researcher_model: BaseChatModel | None = None
 
 
 def get_supervisor_model() -> BaseChatModel:
-    """Get the supervisor model, initializing it if necessary."""
+    """Get the supervisor model, initializing it if necessary.
+
+    Returns:
+        BaseChatModel: The supervisor model
+    """
 
     global _supervisor_model
     if _supervisor_model is None:
@@ -68,7 +73,11 @@ def get_supervisor_model() -> BaseChatModel:
 
 
 def get_researcher_model() -> BaseChatModel:
-    """Get the researcher model, initializing it if necessary."""
+    """Get the researcher model, initializing it if necessary.
+
+    Returns:
+        BaseChatModel: The researcher model
+    """
 
     global _researcher_model
     if _researcher_model is None:
