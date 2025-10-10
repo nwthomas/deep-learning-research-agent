@@ -1,3 +1,12 @@
+"""Module: test_config.py
+
+Description:
+    Test cases for application configuration management including environment
+    variable parsing and default value handling.
+
+Author: Nathan Thomas
+"""
+
 import os
 from unittest.mock import patch
 
@@ -11,6 +20,7 @@ class TestAppConfig:
 
     def test_init_with_kwargs(self) -> None:
         """Test AppConfig initialization with keyword arguments."""
+
         config = AppConfig(
             APP_NAME="test-app",
             APP_PORT=9000,
@@ -23,6 +33,7 @@ class TestAppConfig:
 
     def test_init_empty(self) -> None:
         """Test AppConfig initialization with no arguments."""
+
         config = AppConfig()
         # Should not have any attributes set
         assert not hasattr(config, "APP_NAME")
@@ -33,6 +44,7 @@ class TestBuildAppConfig:
 
     def test_default_values(self) -> None:
         """Test build_app_config with default environment values."""
+
         with patch.dict(os.environ, {}, clear=True):
             config = build_app_config()
 
@@ -63,6 +75,7 @@ class TestBuildAppConfig:
 
     def test_custom_environment_values(self) -> None:
         """Test build_app_config with custom environment values."""
+
         env_vars = {
             "APP_DEBUG": "true",
             "APP_HOST": "localhost",
@@ -115,6 +128,7 @@ class TestBuildAppConfig:
 
     def test_boolean_parsing(self) -> None:
         """Test boolean environment variable parsing."""
+
         test_cases = [
             ("true", True),
             ("True", True),
@@ -134,6 +148,7 @@ class TestBuildAppConfig:
 
     def test_integer_parsing(self) -> None:
         """Test integer environment variable parsing."""
+
         with patch.dict(os.environ, {"APP_PORT": "5000"}, clear=True):
             config = build_app_config()
             assert config.APP_PORT == 5000
@@ -141,17 +156,20 @@ class TestBuildAppConfig:
 
     def test_integer_parsing_invalid(self) -> None:
         """Test integer parsing with invalid values."""
+
         with patch.dict(os.environ, {"APP_PORT": "invalid"}, clear=True):
             with pytest.raises(ValueError):
                 build_app_config()
 
     def test_returns_app_config_instance(self) -> None:
         """Test that build_app_config returns an AppConfig instance."""
+
         config = build_app_config()
         assert isinstance(config, AppConfig)
 
     def test_all_required_attributes_present(self) -> None:
         """Test that all required attributes are present in the config."""
+
         config = build_app_config()
 
         required_attributes = [
