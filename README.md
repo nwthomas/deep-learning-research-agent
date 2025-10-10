@@ -1,8 +1,8 @@
-> NOTE: This repository is in draft state as I'm building. I like learning in public, so here it is.
-
 # Deep Learning Research Agent
 
 A multipurpose deep learning research agent 🔗
+
+This repository is slightly rough around the edges as I built it as a prototype for a production implementation of a deep learning agent. I keep this repository public as it may prove useful as a jumping off point on your own journey with agentic implementations.
 
 ## Table of Contents
 
@@ -132,11 +132,13 @@ SUPERVISOR_MODEL_PROVIDER=
 # LangChain allows, see: https://python.langchain.com/api_reference/langchain/chat_models/langchain.chat_models.base.init_chat_model.html
 SUPERVISOR_MODEL_API_KEY=ollama
 SUPERVISOR_MODEL_BASE_URL=http://localhost:11434
-SUPERVISOR_MODEL_NAME=llama3.1:8b
+SUPERVISOR_MODEL_NAME=gpt-oss:20b
 SUPERVISOR_MODEL_PROVIDER=ollama
 ```
 
-Running `make dev` will automatically use your local `.env` file.
+Note that setting an Anthropic/OpenAI key and model name does not require a base URL or provider name as those are automatically set by the underlying dependencies. However, locally run models will require all these environment variables to be filled out.
+
+Running `make dev` will automatically use your local `.env` file and start up the server in Docker.
 
 ## Issues, Bugs, and Project Management
 
