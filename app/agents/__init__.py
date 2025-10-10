@@ -1,9 +1,9 @@
 from .agents import (
     BUILT_IN_TOOLS,
-    RESEARCHER_MODEL,
     SUB_AGENT_RESEARCHER,
     SUB_AGENT_RESEARCHER_TOOLS,
-    SUPERVISOR_MODEL,
+    get_researcher_model,
+    get_supervisor_model,
 )
 from .prompts import SUPERVISOR_INSTRUCTIONS
 from .state import DeepAgentState
@@ -15,9 +15,9 @@ __all__ = [
     "DeepAgentState",
     "_create_task_tool",
     "BUILT_IN_TOOLS",
-    "RESEARCHER_MODEL",
+    "get_researcher_model",
     "SUB_AGENT_RESEARCHER",
     "SUB_AGENT_RESEARCHER_TOOLS",
-    "SUPERVISOR_MODEL",
+    "get_supervisor_model",
     "stream_agent_for_websocket",
 ]
