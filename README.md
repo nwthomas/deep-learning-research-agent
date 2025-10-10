@@ -36,14 +36,12 @@ This repository started as a combination of learning process and prototyping. It
 
 ### Repository
 
-The following setup is needed for running this codebase correctly:
+The following installs are required for running this codebase locally:
 
 1. [Python](https://www.python.org) (through [Pyenv](https://github.com/pyenv/pyenv))
 2. [Docker](https://www.docker.com)
 
-First, ensure the proper Python version is installed locally. See the [.python-version](./.python-version) file for the recommended versioning.
-
-Install `pyenv` first to manage non-system level Python installations. This can be done with:
+First, ensure the proper Python version is installed locally. Install `pyenv` first to manage non-system level Python installations. This can be done with:
 
 ```bash
 # Install on MacOS
