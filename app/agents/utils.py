@@ -120,7 +120,7 @@ async def stream_agent(agent: Any, query: Any, config: Any = None) -> Any:
     ):
         current_state = None
         if stream_mode == "updates":
-            print(f'Graph: {graph_name if len(graph_name) > 0 else "root"}')
+            print(f"Graph: {graph_name if len(graph_name) > 0 else 'root'}")
 
             node, result = list(event.items())[0]
             print(f"Node: {node}")

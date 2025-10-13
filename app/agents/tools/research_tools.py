@@ -220,17 +220,17 @@ def tavily_search(
         filename = result["filename"]
 
         # Create file content with full details
-        file_content = f"""# Search Result: {result['title']}
+        file_content = f"""# Search Result: {result["title"]}
 
-**URL:** {result['url']}
+**URL:** {result["url"]}
 **Query:** {query}
 **Date:** {get_today_str()}
 
 ## Summary
-{result['summary']}
+{result["summary"]}
 
 ## Raw Content
-{result['raw_content'] if result['raw_content'] else 'No raw content available'}
+{result["raw_content"] if result["raw_content"] else "No raw content available"}
 """
 
         files[filename] = file_content
@@ -242,7 +242,7 @@ def tavily_search(
 
 {chr(10).join(summaries)}
 
-Files: {', '.join(saved_files)}
+Files: {", ".join(saved_files)}
 💡 Use read_file() to access full details when needed."""
 
     return Command(
