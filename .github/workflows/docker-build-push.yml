@@ -20,8 +20,7 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    # NOTE: Update this sentence if the automated PR body changes.
-    if: ${{ !contains(github.event.head_commit.message, 'This PR updates the Helm values.yaml file with the latest image tag.') }}
+    if: ${{ !contains(github.event.head_commit.message, 'Update image tag to') }}
     permissions:
       contents: write
       packages: write
