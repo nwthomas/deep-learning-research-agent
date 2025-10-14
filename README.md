@@ -27,7 +27,6 @@ This repository started as a combination of learning process and prototyping. It
 │   ├── templates/           #
 │   ├── Chart.yaml           #
 │   └── values.yaml          #
-├── migrations/              # Terraform configurations
 ├── tests/                   # All testing files for server application
 └── main.py                  # Root file for running server application
 ```
