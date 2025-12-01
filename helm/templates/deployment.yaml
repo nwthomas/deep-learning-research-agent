@@ -1,0 +1,254 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "deep-learning-research-agent.fullname" . }}
+  labels:
+    {{- include "deep-learning-research-agent.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "deep-learning-research-agent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "deep-learning-research-agent.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "deep-learning-research-agent.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ include "deep-learning-research-agent.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          {{- if .Values.healthCheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+            successThreshold: {{ .Values.healthCheck.successThreshold }}
+            failureThreshold: {{ .Values.healthCheck.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+            successThreshold: {{ .Values.healthCheck.successThreshold }}
+            failureThreshold: {{ .Values.healthCheck.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            # Environment variables from ConfigMap
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: APP_NAME
+            - name: APP_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: APP_HOST
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: APP_PORT
+            - name: APP_RELOAD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: APP_RELOAD
+            - name: APP_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: APP_DEBUG
+            - name: SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: SERVER_HOST
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: SERVER_PORT
+            - name: LANGSMITH_TRACING
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: LANGSMITH_TRACING
+            - name: LANGSMITH_PROJECT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: LANGSMITH_PROJECT
+            - name: MAX_CONCURRENT_RESEARCH_UNITS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: MAX_CONCURRENT_RESEARCH_UNITS
+            - name: MAX_RESEARCHER_ITERATIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: MAX_RESEARCHER_ITERATIONS
+            {{- if .Values.database.enabled }}
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: DB_PORT
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "deep-learning-research-agent.configmapName" . }}
+                  key: POSTGRES_DB
+            {{- end }}
+
+            # Sensitive environment variables from Secret
+            {{- if .Values.langsmith.apiKey }}
+            - name: LANGSMITH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: LANGSMITH_API_KEY
+            {{- end }}
+            {{- if .Values.tavily.apiKey }}
+            - name: TAVILY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: TAVILY_API_KEY
+            {{- end }}
+            {{- if .Values.supervisorModel.apiKey }}
+            - name: SUPERVISOR_MODEL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: SUPERVISOR_MODEL_API_KEY
+            {{- end }}
+            {{- if .Values.supervisorModel.baseUrl }}
+            - name: SUPERVISOR_MODEL_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: SUPERVISOR_MODEL_BASE_URL
+            {{- end }}
+            {{- if .Values.supervisorModel.name }}
+            - name: SUPERVISOR_MODEL_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: SUPERVISOR_MODEL_NAME
+            {{- end }}
+            {{- if .Values.supervisorModel.provider }}
+            - name: SUPERVISOR_MODEL_PROVIDER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: SUPERVISOR_MODEL_PROVIDER
+            {{- end }}
+            {{- if .Values.researcherModel.apiKey }}
+            - name: RESEARCHER_MODEL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: RESEARCHER_MODEL_API_KEY
+            {{- end }}
+            {{- if .Values.researcherModel.baseUrl }}
+            - name: RESEARCHER_MODEL_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: RESEARCHER_MODEL_BASE_URL
+            {{- end }}
+            {{- if .Values.researcherModel.name }}
+            - name: RESEARCHER_MODEL_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: RESEARCHER_MODEL_NAME
+            {{- end }}
+            {{- if .Values.researcherModel.provider }}
+            - name: RESEARCHER_MODEL_PROVIDER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: RESEARCHER_MODEL_PROVIDER
+            {{- end }}
+            {{- if .Values.database.enabled }}
+            {{- if .Values.database.user }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: POSTGRES_USER
+            {{- end }}
+            {{- if .Values.database.password }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "deep-learning-research-agent.secretName" . }}
+                  key: POSTGRES_PASSWORD
+            {{- end }}
+            {{- end }}
+
+            # Extra environment variables
+            {{- range .Values.extraEnv }}
+            {{- if .valueFrom }}
+            - name: {{ .name }}
+              valueFrom:
+                {{- toYaml .valueFrom | nindent 16 }}
+            {{- else }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- end }}
+
+          # Extra environment variables from ConfigMaps/Secrets
+          {{- if .Values.extraEnvFrom }}
+          envFrom:
+            {{- toYaml .Values.extraEnvFrom | nindent 12 }}
+          {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
