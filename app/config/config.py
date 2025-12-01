@@ -42,101 +42,33 @@ class AppConfig:
     SUPERVISOR_MODEL_NAME: str
     SUPERVISOR_MODEL_PROVIDER: str
 
-    def __init__(self, **kwargs: str | int | bool) -> None:
-        """Initialize the application configuration.
+    def __init__(self) -> None:
+        """Initializes the application configuration with environment variables."""
 
-        Args:
-            kwargs (dict): All key-value environment variable names + values
-        """
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def __str__(self) -> str:
-        """Return a string representation of the application configuration."""
-        return f"""
-        AppConfig(
-            APP_DEBUG={self.APP_DEBUG},
-            APP_HOST={self.APP_HOST},
-            APP_LOG_LEVEL={self.APP_LOG_LEVEL},
-            APP_NAME={self.APP_NAME},
-            APP_PORT={self.APP_PORT},
-            APP_RELOAD={self.APP_RELOAD},
-            APP_VERSION={self.APP_VERSION},
-            MAX_CONCURRENT_WEBSOCKET_CONNECTIONS={self.MAX_CONCURRENT_WEBSOCKET_CONNECTIONS},
-            MAX_CONCURRENT_RESEARCH_UNITS={self.MAX_CONCURRENT_RESEARCH_UNITS},
-            MAX_RESEARCHER_ITERATIONS={self.MAX_RESEARCHER_ITERATIONS},
-            RESEARCHER_MODEL_API_KEY={self.RESEARCHER_MODEL_API_KEY},
-            RESEARCHER_MODEL_BASE_URL={self.RESEARCHER_MODEL_BASE_URL},
-            RESEARCHER_MODEL_NAME={self.RESEARCHER_MODEL_NAME},
-            RESEARCHER_MODEL_PROVIDER={self.RESEARCHER_MODEL_PROVIDER},
-            SUPERVISOR_MODEL_API_KEY={self.SUPERVISOR_MODEL_API_KEY},
-            SUPERVISOR_MODEL_BASE_URL={self.SUPERVISOR_MODEL_BASE_URL},
-            SUPERVISOR_MODEL_NAME={self.SUPERVISOR_MODEL_NAME},
-            SUPERVISOR_MODEL_PROVIDER={self.SUPERVISOR_MODEL_PROVIDER},
-        )
-        """
-
-
-def build_app_config() -> AppConfig:
-    """Build the application configuration from environment variables.
-
-    Returns:
-        AppConfig: The application configuration
-    """
-
-    print(
-        AppConfig(
-            # Server settings
-            APP_DEBUG=os.getenv("APP_DEBUG", "false").lower() == "true",
-            APP_HOST=os.getenv("APP_HOST", "0.0.0.0"),
-            APP_LOG_LEVEL=os.getenv("APP_LOG_LEVEL", "info"),
-            APP_NAME=os.getenv("APP_NAME", "deep-learning-research-agent"),
-            APP_PORT=int(os.getenv("APP_PORT", 8000)),
-            APP_RELOAD=os.getenv("APP_RELOAD", "true").lower() == "true",
-            APP_VERSION=os.getenv("APP_VERSION", ""),
-            # Limits on WebSocket connections
-            MAX_CONCURRENT_WEBSOCKET_CONNECTIONS=int(os.getenv("MAX_CONCURRENT_WEBSOCKET_CONNECTIONS", 100)),
-            # Limits on resource usage
-            MAX_CONCURRENT_RESEARCH_UNITS=int(os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 1)),
-            MAX_RESEARCHER_ITERATIONS=int(os.getenv("MAX_RESEARCHER_ITERATIONS", 1)),
-            # Researcher model used for conducting research
-            RESEARCHER_MODEL_API_KEY=os.getenv("RESEARCHER_MODEL_API_KEY", ""),
-            RESEARCHER_MODEL_BASE_URL=os.getenv("RESEARCHER_MODEL_BASE_URL", ""),
-            RESEARCHER_MODEL_NAME=os.getenv("RESEARCHER_MODEL_NAME", ""),
-            RESEARCHER_MODEL_PROVIDER=os.getenv("RESEARCHER_MODEL_PROVIDER", ""),
-            # Supervisor model used as main agent overseeing sub-agents
-            SUPERVISOR_MODEL_API_KEY=os.getenv("SUPERVISOR_MODEL_API_KEY", ""),
-            SUPERVISOR_MODEL_BASE_URL=os.getenv("SUPERVISOR_MODEL_BASE_URL", ""),
-            SUPERVISOR_MODEL_NAME=os.getenv("SUPERVISOR_MODEL_NAME", ""),
-            SUPERVISOR_MODEL_PROVIDER=os.getenv("SUPERVISOR_MODEL_PROVIDER", ""),
-        )
-    )
-
-    return AppConfig(
-        # Server settings
-        APP_DEBUG=os.getenv("APP_DEBUG", "false").lower() == "true",
-        APP_HOST=os.getenv("APP_HOST", "0.0.0.0"),
-        APP_LOG_LEVEL=os.getenv("APP_LOG_LEVEL", "info"),
-        APP_NAME=os.getenv("APP_NAME", "deep-learning-research-agent"),
-        APP_PORT=int(os.getenv("APP_PORT", 8000)),
-        APP_RELOAD=os.getenv("APP_RELOAD", "true").lower() == "true",
-        APP_VERSION=os.getenv("APP_VERSION", ""),
+        self.APP_DEBUG = os.getenv("APP_DEBUG", "false").lower() == "true"
+        self.APP_HOST = os.getenv("APP_HOST", "0.0.0.0")
+        self.APP_LOG_LEVEL = os.getenv("APP_LOG_LEVEL", "info")
+        self.APP_NAME = os.getenv("APP_NAME", "deep-learning-research-agent")
+        self.APP_PORT = int(os.getenv("APP_PORT", 8000))
+        self.APP_RELOAD = os.getenv("APP_RELOAD", "true").lower() == "true"
+        self.APP_VERSION = os.getenv("APP_VERSION", "")
         # Limits on WebSocket connections
-        MAX_CONCURRENT_WEBSOCKET_CONNECTIONS=int(os.getenv("MAX_CONCURRENT_WEBSOCKET_CONNECTIONS", 100)),
+        self.MAX_CONCURRENT_WEBSOCKET_CONNECTIONS = int(
+            int(os.getenv("MAX_CONCURRENT_WEBSOCKET_CONNECTIONS", 100)),
+        )
         # Limits on resource usage
-        MAX_CONCURRENT_RESEARCH_UNITS=int(os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 1)),
-        MAX_RESEARCHER_ITERATIONS=int(os.getenv("MAX_RESEARCHER_ITERATIONS", 1)),
+        self.MAX_CONCURRENT_RESEARCH_UNITS = int(os.getenv("MAX_CONCURRENT_RESEARCH_UNITS", 1))
+        self.MAX_RESEARCHER_ITERATIONS = int(os.getenv("MAX_RESEARCHER_ITERATIONS", 1))
         # Researcher model used for conducting research
-        RESEARCHER_MODEL_API_KEY=os.getenv("RESEARCHER_MODEL_API_KEY", ""),
-        RESEARCHER_MODEL_BASE_URL=os.getenv("RESEARCHER_MODEL_BASE_URL", ""),
-        RESEARCHER_MODEL_NAME=os.getenv("RESEARCHER_MODEL_NAME", ""),
-        RESEARCHER_MODEL_PROVIDER=os.getenv("RESEARCHER_MODEL_PROVIDER", ""),
+        self.RESEARCHER_MODEL_API_KEY = os.getenv("RESEARCHER_MODEL_API_KEY", "")
+        self.RESEARCHER_MODEL_BASE_URL = os.getenv("RESEARCHER_MODEL_BASE_URL", "")
+        self.RESEARCHER_MODEL_NAME = os.getenv("RESEARCHER_MODEL_NAME", "")
+        self.RESEARCHER_MODEL_PROVIDER = os.getenv("RESEARCHER_MODEL_PROVIDER", "")
         # Supervisor model used as main agent overseeing sub-agents
-        SUPERVISOR_MODEL_API_KEY=os.getenv("SUPERVISOR_MODEL_API_KEY", ""),
-        SUPERVISOR_MODEL_BASE_URL=os.getenv("SUPERVISOR_MODEL_BASE_URL", ""),
-        SUPERVISOR_MODEL_NAME=os.getenv("SUPERVISOR_MODEL_NAME", ""),
-        SUPERVISOR_MODEL_PROVIDER=os.getenv("SUPERVISOR_MODEL_PROVIDER", ""),
-    )
+        self.SUPERVISOR_MODEL_API_KEY = os.getenv("SUPERVISOR_MODEL_API_KEY", "")
+        self.SUPERVISOR_MODEL_BASE_URL = os.getenv("SUPERVISOR_MODEL_BASE_URL", "")
+        self.SUPERVISOR_MODEL_NAME = os.getenv("SUPERVISOR_MODEL_NAME", "")
+        self.SUPERVISOR_MODEL_PROVIDER = os.getenv("SUPERVISOR_MODEL_PROVIDER", "")
 
 
-app_config = build_app_config()
+app_config = AppConfig()
