@@ -1,21 +1,7 @@
 """Module: errors.py
 
 Description:
-    Custom error classes used through the application.
-
-Author: Nathan Thomas
-"""
-
-from typing import Any
-
-from fastapi import HTTPException
-
-
-class CustomError(HTTPException):
-    """
-    Custom exception class that provides a standardized error response format.
-
-    All errors return the same structure:
+    Custom error classes used through the application. All custom errors return the same structure:
     {
         "detail": [
             {
@@ -25,7 +11,15 @@ class CustomError(HTTPException):
             }
         ]
     }
-    """
+
+Author: Nathan Thomas
+"""
+
+from fastapi import HTTPException
+
+
+class CustomError(HTTPException):
+    """Custom exception class that provides a standardized error response format."""
 
     def __init__(
         self,
@@ -48,7 +42,7 @@ class ValidationError(CustomError):
 class NotFoundError(CustomError):
     """Resource not found error."""
 
-    def __init__(self, resource: str = "Resource", resource_id: Any = None):
+    def __init__(self, resource: str = "Resource", resource_id: str | None = None):
         message = f"{resource} not found"
         if resource_id:
             message += f" with id: {resource_id}"

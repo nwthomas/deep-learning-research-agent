@@ -13,7 +13,7 @@ from types import FrameType
 
 import uvicorn
 
-from app.shared.config import app_config
+from app.config import app_config
 
 
 def signal_handler(signum: int, _frame: FrameType | None) -> None:
@@ -31,11 +31,9 @@ def signal_handler(signum: int, _frame: FrameType | None) -> None:
 def run_server() -> None:
     """Run the application server via uvicorn with proper signal handling."""
 
-    # Register signal handlers for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    # Run the application server
     uvicorn.run(
         "app.api.server:app",
         host=app_config.APP_HOST,

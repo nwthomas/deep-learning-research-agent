@@ -1,3 +1,3 @@
-from .websocket import manager
+from .server import app
 
-__all__ = ["manager"]
+__all__ = ["app"]
