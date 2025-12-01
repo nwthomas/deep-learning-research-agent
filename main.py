@@ -13,6 +13,7 @@ from types import FrameType
 
 import uvicorn
 
+from app.agents import call_supervisor_agent
 from app.config import app_config
 
 
@@ -34,6 +35,7 @@ def run_server() -> None:
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
+    print(call_supervisor_agent())
     uvicorn.run(
         "app.api.server:app",
         host=app_config.APP_HOST,
