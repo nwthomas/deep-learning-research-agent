@@ -33,6 +33,14 @@ class AppConfig:
     SUMMARIZATION_MODEL_BASE_URL: str
     SUMMARIZATION_MODEL_NAME: str
 
+    # Researcher model settings
+    RESEARCHER_MODEL_API_KEY: str
+    RESEARCHER_MODEL_BASE_URL: str
+    RESEARCHER_MODEL_NAME: str
+    RESEARCHER_MODEL_PROVIDER: str
+    RESEARCHER_MODEL_TEMPERATURE: float
+    RESEARCHER_MODEL_RETRIES: int
+
     def __init__(self) -> None:
         """Initializes the application configuration with environment variables."""
 
@@ -54,9 +62,20 @@ class AppConfig:
         self.SUPERVISOR_MODEL_RETRIES = int(os.getenv("SUPERVISOR_MODEL_RETRIES", DEFAULT_RETRIES))
         self.SUPERVISOR_MODEL_TEMPERATURE = float(os.getenv("SUPERVISOR_MODEL_TEMPERATURE", 0.0))
 
-        # Summarization model settings
-        self.SUMMARIZATION_MODEL_BASE_URL = os.getenv("SUMMARIZATION_MODEL_BASE_URL", "")
-        self.SUMMARIZATION_MODEL_NAME = os.getenv("SUMMARIZATION_MODEL_NAME", "")
+        # Researcher model agent settings
+        self.RESEARCHER_MODEL_API_KEY = os.getenv("RESEARCHER_MODEL_API_KEY", "")
+        self.RESEARCHER_MODEL_BASE_URL = os.getenv(
+            "RESEARCHER_MODEL_BASE_URL", os.getenv("SUPERVISOR_MODEL_BASE_URL", "")
+        )
+        self.RESEARCHER_MODEL_NAME = os.getenv("RESEARCHER_MODEL_NAME", "")
+        self.RESEARCHER_MODEL_PROVIDER = os.getenv("RESEARCHER_MODEL_PROVIDER", "")
+        self.RESEARCHER_MODEL_RETRIES = int(os.getenv("RESEARCHER_MODEL_RETRIES", DEFAULT_RETRIES))
+        self.RESEARCHER_MODEL_TEMPERATURE = float(
+            os.getenv(
+                "RESEARCHER_MODEL_TEMPERATURE",
+                0.0,
+            )
+        )
 
 
 app_config = AppConfig()

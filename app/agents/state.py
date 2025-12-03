@@ -37,7 +37,7 @@ def add_file(ctx: RunContext[State], name: str, contents: str, summary: str) -> 
         summary: The summary of the file
     """
 
-    ctx.state.files[name] = File(
+    ctx.deps.files[name] = File(
         name=name,
         contents=contents,
         summary=summary,
@@ -52,7 +52,7 @@ def get_file_names(ctx: RunContext[State]) -> list[str]:
         List[str]: The names of the files
     """
 
-    return list(ctx.state.files.keys())
+    return list(ctx.deps.files.keys())
 
 
 @Tool
@@ -66,7 +66,7 @@ def get_file(ctx: RunContext[State], name: str) -> File | None:
         File | None: The file or None if the file does not exist
     """
 
-    return cast(File | None, ctx.state.files.get(name))
+    return cast(File | None, ctx.deps.files.get(name))
 
 
 @Tool
@@ -78,7 +78,7 @@ def add_todo(ctx: RunContext[State], name: str, summary: str) -> None:
         summary: The summary of the todo item
     """
 
-    ctx.state.todos[name] = TodoItem(name=name, summary=summary)
+    ctx.deps.todos[name] = TodoItem(name=name, summary=summary)
 
 
 @Tool
@@ -89,7 +89,7 @@ def get_todo_names(ctx: RunContext[State]) -> list[str]:
         List[str]: The names of the todo items
     """
 
-    return list(ctx.state.todos.keys())
+    return list(ctx.deps.todos.keys())
 
 
 @Tool
@@ -100,7 +100,7 @@ def get_todos(ctx: RunContext[State]) -> list[TodoItem]:
         List[TodoItem]: The todo items
     """
 
-    return list(ctx.state.todos.values())
+    return list(ctx.deps.todos.values())
 
 
 @Tool
@@ -114,7 +114,7 @@ def get_todo(ctx: RunContext[State], name: str) -> TodoItem | None:
         TodoItem | None: The todo item or None if the todo item does not exist
     """
 
-    return cast(TodoItem | None, ctx.state.todos.get(name))
+    return cast(TodoItem | None, ctx.deps.todos.get(name))
 
 
 @Tool
@@ -125,7 +125,7 @@ def complete_todo(ctx: RunContext[State], name: str) -> None:
         name: The name of the todo item
     """
 
-    if todo_item := ctx.state.todos.get(name):
+    if todo_item := ctx.deps.todos.get(name):
         todo_item.completed = True
     else:
         raise ValueError(f"Todo item {name} not found")

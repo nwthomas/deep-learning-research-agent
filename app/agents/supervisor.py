@@ -33,10 +33,11 @@ class Answer(BaseModel):
 
 
 @Tool
-async def delegate_research(_ctx: RunContext[State], query: str) -> AgentRunResult[ResearchResult]:
+async def delegate_research(ctx: RunContext[State], query: str) -> AgentRunResult[ResearchResult]:
     """Delegate research to the researcher agent."""
-    result = await research_agent.run(query, state=_ctx.state)
-    return result.data
+    print(f"Delegating research to the researcher agent for query: {query}")
+    result = await research_agent.run(query, deps=ctx.deps)
+    return result
 
 
 provider = OllamaProvider(base_url=app_config.SUPERVISOR_MODEL_BASE_URL)
@@ -48,7 +49,6 @@ supervisor_model = OpenAIChatModel(
 )
 
 supervisor_agent = Agent[str, Answer](
-    deps_type=State,
     instructions=SUPERVISOR_INSTRUCTIONS.format(date=get_today_str()),
     model=supervisor_model,
     output_type=Answer,
