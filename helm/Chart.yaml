@@ -1,14 +1,13 @@
 apiVersion: v2
 name: deep-learning-research-agent
-description: A multi-agent deep learning research system built with LangChain and LangGraph
+description: A multi-agent deep learning research system
 type: application
 version: 0.0.0-alpha
 appVersion: "0.0.0-alpha"
 keywords:
   - ai
   - research
-  - langchain
-  - langgraph
+  - pydantic-ai
   - multi-agent
 home: https://github.com/nwthomas/deep-learning-research-agent
 sources:

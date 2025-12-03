@@ -1,12 +1,3 @@
-"""Module: server.py
-
-Description:
-    Main server file for the server application. It initializes a FastAPI app, adds middleware, and handles
-    various exceptions.
-
-Author: Nathan Thomas
-"""
-
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -37,7 +28,7 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(
     title="Deep Learning Research Agent API",
-    description="API for conducting deep learning research with streaming capabilities",
+    description="A deep learning research agent API",
     version=app_config.APP_VERSION,
     lifespan=lifespan,
     debug=app_config.APP_DEBUG,
@@ -45,6 +36,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
+    # TODO: Update with variables from config for development and production environments
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
