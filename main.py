@@ -1,19 +1,11 @@
-"""Module: main.py
-
-Description:
-    Entrypoint file for running the FastAPI server that powers a deep learning research agent. It
-    allows connection via websocket for real-time streaming of agent actions.
-
-Author: Nathan Thomas
-"""
-
 import signal
 import sys
 from types import FrameType
 
 import uvicorn
 
-from app.shared.config import app_config
+from app.agents import call_supervisor_agent
+from app.config import app_config
 
 
 def signal_handler(signum: int, _frame: FrameType | None) -> None:
@@ -31,11 +23,9 @@ def signal_handler(signum: int, _frame: FrameType | None) -> None:
 def run_server() -> None:
     """Run the application server via uvicorn with proper signal handling."""
 
-    # Register signal handlers for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-
-    # Run the application server
+    print(call_supervisor_agent("What can you find on Trump's second presidenty in terms of controversies?"))
     uvicorn.run(
         "app.api.server:app",
         host=app_config.APP_HOST,

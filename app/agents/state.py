@@ -1,79 +1,131 @@
-"""Module: state.py
+from typing import cast
 
-Description:
-    This module contains state management for deep agents with TODO tracking and virtual file systems, including:
-    - Task planning and progress tracking through TODO lists
-    - Context offloading through a virtual file system stored in state
-    - Efficient state merging with reducer functions
-
-Author: Nathan Thomas
-"""
-
-from typing import Annotated, Literal, TypedDict
-
-from langgraph.prebuilt.chat_agent_executor import AgentState
+from pydantic import BaseModel, Field
+from pydantic_ai import RunContext, Tool
 
 
-class Todo(TypedDict):
-    """A structured task item for tracking progress through complex workflows.
+class File(BaseModel):
+    """File for the supervisor agent."""
 
-    Attributes:
-        content (str): Short, specific description of the task
-        status (Literal["pending", "in_progress", "completed"]): Current state - pending, in_progress, or completed
-    """
-
-    content: str
-    status: Literal["pending", "in_progress", "completed"]
+    name: str
+    contents: str
+    summary: str
 
 
-def file_reducer(left: dict[str, str] | None, right: dict[str, str] | None) -> dict[str, str] | None:
-    """Merge two file dictionaries, with right side taking precedence.
+class TodoItem(BaseModel):
+    """Todo item for the supervisor agent."""
 
-    Used as a reducer function for the files field in agent state,
-    allowing incremental updates to the virtual file system.
+    completed: bool = Field(default=False)
+    name: str
+    summary: str
+
+
+class State(BaseModel):
+    """State for the supervisor agent."""
+
+    files: dict[str, File] = Field(default_factory=dict)
+    todos: dict[str, TodoItem] = Field(default_factory=dict)
+
+
+@Tool
+def add_file(ctx: RunContext[State], name: str, contents: str, summary: str) -> None:
+    """Add a file to the state.
 
     Args:
-        left (dict[str, str] | None): Left side dictionary (existing files)
-        right (dict[str, str] | None): Right side dictionary (new/updated files)
-
-    Returns:
-        dict[str, str] | None: Merged dictionary with right values overriding left values
+        name: The name of the file
+        contents: The contents of the file
+        summary: The summary of the file
     """
 
-    if left is None:
-        return right
-    elif right is None:
-        return left
+    ctx.deps.files[name] = File(
+        name=name,
+        contents=contents,
+        summary=summary,
+    )
+
+
+@Tool
+def get_file_names(ctx: RunContext[State]) -> list[str]:
+    """Get a list of the names of the files stored in state
+
+    Returns:
+        List[str]: The names of the files
+    """
+
+    return list(ctx.deps.files.keys())
+
+
+@Tool
+def get_file(ctx: RunContext[State], name: str) -> File | None:
+    """Get a file from the state.
+
+    Args:
+        name: The name of the file
+
+    Returns:
+        File | None: The file or None if the file does not exist
+    """
+
+    return cast(File | None, ctx.deps.files.get(name))
+
+
+@Tool
+def add_todo(ctx: RunContext[State], name: str, summary: str) -> None:
+    """Add a todo item to the state.
+
+    Args:
+        name: The name of the todo item
+        summary: The summary of the todo item
+    """
+
+    ctx.deps.todos[name] = TodoItem(name=name, summary=summary)
+
+
+@Tool
+def get_todo_names(ctx: RunContext[State]) -> list[str]:
+    """Get a list of the names of the todo items stored in state
+
+    Returns:
+        List[str]: The names of the todo items
+    """
+
+    return list(ctx.deps.todos.keys())
+
+
+@Tool
+def get_todos(ctx: RunContext[State]) -> list[TodoItem]:
+    """Get a list of the todo items stored in state
+
+    Returns:
+        List[TodoItem]: The todo items
+    """
+
+    return list(ctx.deps.todos.values())
+
+
+@Tool
+def get_todo(ctx: RunContext[State], name: str) -> TodoItem | None:
+    """Get a todo item from the state.
+
+    Args:
+        name: The name of the todo item
+
+    Returns:
+        TodoItem | None: The todo item or None if the todo item does not exist
+    """
+
+    return cast(TodoItem | None, ctx.deps.todos.get(name))
+
+
+@Tool
+def complete_todo(ctx: RunContext[State], name: str) -> None:
+    """Complete a todo item in the state.
+
+    Args:
+        name: The name of the todo item
+    """
+
+    if todo_item := ctx.deps.todos.get(name):
+        todo_item.completed = True
     else:
-        return {**left, **right}
-
-
-def todo_reducer(left: list[Todo] | None, right: list[Todo] | None) -> list[Todo] | None:
-    """Merge two todo lists, with right side taking precedence.
-
-    Used as a reducer function for the todos field in agent state,
-    allowing concurrent updates to the TODO list from multiple agents.
-
-    Args:
-        left (list[Todo] | None): Left side list (existing todos)
-        right (list[Todo] | None): Right side list (new/updated todos)
-
-    Returns:
-        list[Todo] | None: Right side todos list, taking full precedence over left
-    """
-
-    if right is None:
-        return left
-    return right
-
-
-class DeepAgentState(AgentState):
-    """Extended agent state that includes task tracking and virtual file system.
-
-    Inherits from LangGraph's AgentState and adds:
-    - todos (Annotated[list[Todo], todo_reducer]): List of Todo items for task planning and progress tracking
-    - files (Annotated[dict[str, str], file_reducer]): Virtual file system stored as dict mapping filenames to content
-    """
-
-    todos: Annotated[list[Todo], todo_reducer]
-    files: Annotated[dict[str, str], file_reducer]
+        raise ValueError(f"Todo item {name} not found")

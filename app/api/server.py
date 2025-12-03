@@ -1,24 +1,13 @@
-"""Module: server.py
-
-Description:
-    Main server file for the server application. It initializes a FastAPI app, adds middleware, and handles
-    various exceptions.
-
-Author: Nathan Thomas
-"""
-
-import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from ..shared.config import app_config
-from ..shared.errors import CustomError
-from .websocket import manager
+from app.config import app_config
+from app.errors import CustomError
 
 
 @asynccontextmanager
@@ -32,26 +21,22 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
         AsyncGenerator[None, None]: The lifespan generator
     """
 
-    # Everything below this is run on startup
     print(f"Starting {app_config.APP_NAME}")
     yield
-
-    # Everything below this is run on shutdown
     print(f"Shutting down {app_config.APP_NAME}")
 
 
-# Create FastAPI app
 app = FastAPI(
     title="Deep Learning Research Agent API",
-    description="API for conducting deep learning research with streaming capabilities",
+    description="A deep learning research agent API",
     version=app_config.APP_VERSION,
     lifespan=lifespan,
     debug=app_config.APP_DEBUG,
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
+    # TODO: Update with variables from config for development and production environments
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
@@ -128,37 +113,17 @@ async def global_exception_handler(_request: Request, _exc: Exception) -> JSONRe
 
 
 @app.get("/health")
-async def health_check() -> dict[str, str]:
+async def health_check() -> JSONResponse:
     """Health check endpoint.
 
     Returns:
-        dict[str, str]: The health check response
+        JSONResponse: The health check response
     """
 
-    return {
-        "status": "healthy",
-        "service": app_config.APP_NAME,
-    }
-
-
-@app.websocket("/ws")
-async def handle_websocket_stream(websocket: WebSocket) -> None:
-    """WebSocket endpoint for real-time streaming research
-
-    Args:
-        websocket (WebSocket): The websocket connection
-    """
-
-    # TODO: This could be upgraded for a production environment to track clients by a real unique ID
-    # persisted across sessions. However, this is fine for this server's purposes right now.
-    client_id = str(uuid.uuid4())
-    connection_accepted = await manager.connect(websocket, client_id)
-
-    # Connection was already closed by manager.connect() due to server overload. Simply return as there's
-    # no need to send additional messages or disconnect.
-    if not connection_accepted:
-        return
-
-    # Handle any further messages in the websocket stream through the established connection. This also
-    # handles errors with disconnection, so no need for try/except here.
-    await manager.handle_websocket_stream(websocket, client_id)
+    return JSONResponse(
+        status_code=200,
+        content={
+            "status": "healthy",
+            "service": app_config.APP_NAME,
+        },
+    )

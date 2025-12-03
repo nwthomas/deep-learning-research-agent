@@ -8,10 +8,10 @@ This repository started as a combination of learning process and prototyping. It
 
 1. [Project Structure](#project-structure)
 2. [Setup](#setup)
-    - [Repository](#repository)
-    - [Environment Variables](#environment-variables)
-    - [IDE](#ide)
-    - [Coding](#coding)
+   - [Repository](#repository)
+   - [Environment Variables](#environment-variables)
+   - [IDE](#ide)
+   - [Coding](#coding)
 3. [Issues, Bugs, and Project Management](#issues-bugs-and-project-management)
 4. [Acknowledgements](#️-acknowledgements)
 
@@ -57,8 +57,8 @@ Next, use `pyenv` to install Python:
 
 ```bash
 # Install on MacOS, Linux, and Windows
-pyenv install 3.12.4
-pyenv global 3.12.4
+pyenv install 3.14.0
+pyenv global 3.14.0
 
 # Check install afterwards
 python --version
